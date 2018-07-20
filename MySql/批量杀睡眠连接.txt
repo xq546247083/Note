@@ -1,0 +1,1 @@
+SELECT CONCAT('KILL ',id,';') FROM information_schema.processlist WHERE USER='root' AND command='sleep';
