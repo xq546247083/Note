@@ -1,0 +1,198 @@
+#查询每个栏目下的商品数量
+{
+key:{cat_id:1},
+cond:{},
+reduce:function(curr,result) {
+    result.cnt += 1;
+},
+initial:{cnt:0}
+}
+
+
+#查询每个栏目下价格高于50元的商品数量
+{
+key:{cat_id:1},
+cond:{shop_price:{$gt:50}},
+reduce:function(curr,result) {
+    result.cnt += 1;
+},
+initial:{cnt:0}
+}
+
+
+
+#每个栏目下的商品库存量 sum()操作
+{
+key:{cat_id:1},
+cond:{},
+reduce:function(curr,result) {
+    result.num += curr.goods_number;
+},
+initial:{num:0}
+}
+
+
+#查询每个栏目最贵的商品价格, max()操作
+{
+key:{cat_id:1},
+cond:{},
+reduce:function(curr , result) {
+    if(curr.shop_price > result.max) {
+        result.max = curr.shop_price;
+    }
+},
+initial:{max:0}
+}
+
+
+#同上,查询每个栏目下最便宜的商品价格,同学们自行完成
+
+
+
+#查询每个栏目下商品的平均价格
+{
+key:{cat_id:1},
+cond:{},
+reduce:function(curr , result) {
+    result.cnt += 1;
+    result.sum += curr.shop_price;
+},
+initial:{sum:0,cnt:0},
+finalize:function(result) {
+    result.avg = result.sum/result.cnt;
+}
+}
+
+
+
+
+
+#查询每个栏目下的商品数量
+db.collection.aggregate();
+[
+{$group:{_id:"$cat_id",total:{$sum:1}}}
+]
+
+#查询goods下有多少条商品,select count(*) from goods
+[
+{$group:{_id:null,total:{$sum:1}}}
+]
+
+
+#查询每个栏目下 价格大于50元的商品个数
+[
+{$match:{shop_price:{$gt:50}}},
+{$group:{_id:"$cat_id",total:{$sum:1}}}
+]
+
+
+#查询每个栏目下 价格大于50元的商品个数
+#并筛选出"满足条件的商品个数" 大于等于3的栏目 
+[
+{$match:{shop_price:{$gt:50}}},
+{$group:{_id:"$cat_id",total:{$sum:1}}},
+{$match:{total:{$gte:3}}}
+]
+
+
+
+#查询每个栏目下的库存量
+[
+{$group:{_id:"$cat_id" , total:{$sum:"$goods_number"}}},
+]
+
+
+#查询每个栏目下的库存量,并按库存量排序
+[
+{$group:{_id:"$cat_id" , total:{$sum:"$goods_number"}}},
+{$sort:{total:1}}
+]
+
+
+#查询每个栏目下的库存量,并按库存量排序
+[
+{$group:{_id:"$cat_id" , total:{$sum:"$goods_number"}}},
+{$sort:{total:1}},
+{$limit:3}
+]
+
+
+#查询每个栏目的商品平均价格,并按平均价格由高到低排序
+[
+{$group:{_id:"$cat_id" , avg:{$avg:"$shop_price"}}},
+{$sort:{avg:-1}}
+]
+
+
+mapReduce 随着"大数据"概念而流行.
+其实mapReduce的概念非常简单,
+从功能上说,相当于RDBMS的 group 操作
+
+
+
+mapReduce的真正强项在哪?
+答:在于分布式,当数据非常大时,像google,有N多数据中心,
+数据都不在地球的一端,用group力所不及.
+
+group既然不支持分布式,单台服务器的运算能力必然是有限的.
+
+而mapRecuce支持分布式,支持大量的服务器同时工作,
+用蛮力来统计.
+
+mapRecuce的工作过程:
+map-->映射
+reduce->归约
+
+
+map: 先是把属于同一个组的数据,映射到一个数组上.cat_id-3 [23,2,6,7]
+reduce: 把数组(同一组)的数据,进行运算.
+
+
+用mapReduce计算每个栏目的库存总量
+
+
+map函数
+var map = function() {
+    emit(this.cat_id,this.goods_number);
+    }
+
+
+var reduce = function(cat_id,numbers) {
+    return Array.sum(numbers);
+}
+
+
+db.goods.mapReduce(map,reduce,{out:'res'});
+
+
+#用mapReduce计算每个栏目下商品的平均价格
+
+var map = function() {
+    emit(this.cat_id,this.shop_price);
+    }
+
+
+var reduce = function(cat_id,values) {
+    return Array.avg(values);
+}
+
+
+db.goods.mapReduce(map,reduce,{out:'res'});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
