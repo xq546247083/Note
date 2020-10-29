@@ -1,7 +1,0 @@
-PK – Primary key（主键）
-NN – Not null（非空）
-UQ – Unique（唯一）
-BIN – Binary（二进制数）
-UN – Unsigned（无符号）
-ZF – Zero fill（补零）
-AI – Autoincrement（自动增量）
