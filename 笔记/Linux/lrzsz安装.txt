@@ -1,0 +1,11 @@
+1、GCC环境安装
+    GCC环境包，在百度云网盘
+    rpm  -ivh  *.rpm --nodeps --force
+2、lrzsz安装
+    tar zxf lrzsz-0.12.20.tar.gz
+    cd lrzsz-0.12.20
+    ./configure –prefix=/usr/local/lrzsz
+    make && make install
+    cd /usr/bin
+    ln -s /usr/local/lrzsz/bin/lrz rz
+    ln -s /usr/local/lrzsz/bin/lsz sz
