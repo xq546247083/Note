@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS temp;
+CREATE TABLE `temp`(  
+  `Test1` INT(10) UNSIGNED NOT NULL COMMENT 'Test1',
+  `Test2` INT(10) COMMENT 'Test2',
+   PRIMARY KEY (`Test1`)
+)
+COMMENT='';
+
+-- 插入武将模型Id对应头像模型Id数据 --
+INSERT INTO temp (Test1, Test2) VALUES (12011116, 15011016);
+
+DROP TABLE IF EXISTS temp;

@@ -1,0 +1,5 @@
+UUID():新建Guid
+CONCAT('1a,',', 'b'):连接字符串函数
+CONCAT_WS(',','a','b'):以第一个参数为分隔符
+FIND_IN_SET('a','ab'):查找字符串
+Group_Concat([DISTINCT] 要连接的字段 [Order BY ASC/DESC 排序字段] [Separator '分隔符'])

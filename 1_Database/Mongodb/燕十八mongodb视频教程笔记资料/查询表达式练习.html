@@ -1,0 +1,53 @@
+﻿<pre>
+
+
+三	查询知识
+注:以下查询基于ecshop网站的商品表(ecs_goods)
+在练习时可以只取部分列,方便查看.
+
+1: 基础查询 where的练习:
+
+查出满足以下条件的商品
+1.1:主键为32的商品
+ db.goods.find({goods_id:32});
+
+1.2:不属第3栏目的所有商品($ne)
+ db.goods.find({cat_id:{$ne:3}},{goods_id:1,cat_id:1,goods_name:1});
+
+1.3:本店价格高于3000元的商品{$gt}
+ db.goods.find({shop_price:{$gt:3000}},{goods_name:1,shop_price:1});
+
+1.4:本店价格低于或等于100元的商品($lte)
+ db.goods.find({shop_price:{$lte:100}},{goods_name:1,shop_price:1});
+
+1.5:取出第4栏目或第11栏目的商品($in)
+ db.goods.find({cat_id:{$in:[4,11]}},{goods_name:1,shop_price:1});
+
+
+1.6:取出100<=价格<=500的商品($and)
+db.goods.find({$and:[{price:{$gt:100},{$price:{$lt:500}}}]);
+
+
+1.7:取出不属于第3栏目且不属于第11栏目的商品($and $nin和$nor分别实现)
+ db.goods.find({$and:[{cat_id:{$ne:3}},{cat_id:{$ne:11}}]},{goods_name:1,cat_id:1})
+ db.goods.find({cat_id:{$nin:[3,11]}},{goods_name:1,cat_id:1});
+ db.goods.find({$nor:[{cat_id:3},{cat_id:11}]},{goods_name:1,cat_id:1});
+
+
+1.8:取出价格大于100且小于300,或者大于4000且小于5000的商品()
+db.goods.find({$or:[{$and:[{shop_price:{$gt:100}},{shop_price:{$lt:300}}]},{$and:[{shop_price:{$gt:4000}},{shop_price:{$lt:5000}}]}]},{goods_name:1,shop_price:1});
+
+
+
+1.9:取出goods_id%5 == 1, 即,1,6,11,..这样的商品
+db.goods.find({goods_id:{$mod:[5,1]}});
+
+
+1.10:取出有age属性的文档
+db.stu.find({age:{$exists:1}});
+含有age属性的文档将会被查出
+
+
+
+
+</pre>

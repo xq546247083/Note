@@ -1,0 +1,25 @@
+1、需要联网，最好还翻墙
+2、抓包的程序，抓包的任务管理器，运行的WinDebug,加载的SOS.dll,clr.dll,mscordacwks.dll的位数必须一致。（64/86）
+32位任务管理器路径：C:\Windows\SysWOW64\Taskmgr.exe
+3、加载的SOS.dll,clr.dll,mscordacwks.dll的dll版本可以通过.NET Memory Profiler分析出来，一般在程序的运行的电脑上有。
+4、初始化环境命令
+.sympath srv*C:\symbols*https://msdl.microsoft.com/download/symbols
+!sym noisy
+.cordll -ve -u  -l
+.load SOS.dll
+.load clr.dll
+.load mscordacwks.dll
+
+.load wow64exts
+
+5、分析CPU占用命令
+!runaway
+~27s
+!clrstack
+
+!syncblk 锁持有情况
+
+kb 堆栈
+~*kb 所有线程堆栈
+kv 包含clr的堆栈
+~*kv 所有线程包含clr的堆栈

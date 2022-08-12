@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+   <style type="text/css">
+   body {
+ font-family: "Microsoft Yahei", Helvetica, arial, sans-serif ;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: white;
+  padding: 30px; 
+color: #516272;}
+
+body > *:first-child {
+  margin-top: 0 !important; }
+body > *:last-child {
+  margin-bottom: 0 !important; }
+
+a {
+  color: #4183C4; }
+a.absent {
+  color: #cc0000; }
+a.anchor {
+  display: block;
+  padding-left: 30px;
+  margin-left: -30px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  cursor: text;
+  position: relative; }
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA09pVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoMTMuMCAyMDEyMDMwNS5tLjQxNSAyMDEyLzAzLzA1OjIxOjAwOjAwKSAgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUM2NjlDQjI4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUM2NjlDQjM4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5QzY2OUNCMDg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5QzY2OUNCMTg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsQhXeAAAABfSURBVHjaYvz//z8DJYCRUgMYQAbAMBQIAvEqkBQWXI6sHqwHiwG70TTBxGaiWwjCTGgOUgJiF1J8wMRAIUA34B4Q76HUBelAfJYSA0CuMIEaRP8wGIkGMA54bgQIMACAmkXJi0hKJQAAAABJRU5ErkJggg==) no-repeat 10px center;
+  text-decoration: none; }
+
+h1 tt, h1 code {
+  font-size: inherit; }
+
+h2 tt, h2 code {
+  font-size: inherit; }
+
+h3 tt, h3 code {
+  font-size: inherit; }
+
+h4 tt, h4 code {
+  font-size: inherit; }
+
+h5 tt, h5 code {
+  font-size: inherit; }
+
+h6 tt, h6 code {
+  font-size: inherit; }
+
+h1 {
+  font-size: 28px;
+  color: #2B3F52; }
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #DDE4E9;
+  color: #2B3F52; }
+
+h3 {
+  font-size: 18px;
+  color: #2B3F52;  }
+
+h4 {
+  font-size: 16px;
+  color: #2B3F52;  }
+
+h5 {
+  font-size: 14px;
+  color: #2B3F52;  }
+
+h6 {
+  color: #2B3F52;
+  font-size: 14px;
+ }
+
+p, blockquote, ul, ol, dl, li, table, pre {
+  margin: 15px 0;
+  color: #516272;  }
+
+hr {
+  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+  border: 0 none;
+  color: #cccccc;
+  height: 4px;
+  padding: 0;
+
+}
+
+body > h2:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+body > h1:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+  body > h1:first-child + h2 {
+    margin-top: 0;
+    padding-top: 0; }
+body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0; }
+
+h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+  margin-top: 0; }
+
+li p.first {
+  display: inline-block; }
+li {
+  margin: 0; }
+ul, ol {
+  padding-left: 30px; }
+
+ul :first-child, ol :first-child {
+  margin-top: 0; }
+
+dl {
+  padding: 0; }
+  dl dt {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    padding: 0;
+    margin: 15px 0 5px; }
+    dl dt:first-child {
+      padding: 0; }
+    dl dt > :first-child {
+      margin-top: 0; }
+    dl dt > :last-child {
+      margin-bottom: 0; }
+  dl dd {
+    margin: 0 0 15px;
+    padding: 0 15px; }
+    dl dd > :first-child {
+      margin-top: 0; }
+    dl dd > :last-child {
+      margin-bottom: 0; }
+
+blockquote {
+  border-left: 4px solid #ECF0F3;
+  /*padding: 0 15px;*/
+  padding: 15px;
+  background-color:#F7F9FA;
+  color: #2B3F52; }
+  blockquote > :first-child {
+    margin-top: 0; }
+  blockquote > :last-child {
+    margin-bottom: 0; }
+
+table {
+  padding: 0;border-collapse: collapse; }
+  table tr {
+    border-top: 1px solid #cccccc;
+    background-color: white;
+    margin: 0;
+    padding: 0; }
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8; }
+    table tr th {
+      font-weight: bold;
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr td {
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0; }
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0; }
+
+img {
+  max-width: 100%; }
+
+span.frame {
+  display: block;
+  overflow: hidden; }
+  span.frame > span {
+    border: 1px solid #dddddd;
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin: 13px 0 0;
+    padding: 7px;
+    width: auto; }
+  span.frame span img {
+    display: block;
+    float: left; }
+  span.frame span span {
+    clear: both;
+    color: #333333;
+    display: block;
+    padding: 5px 0 0; }
+span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-center > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: center; }
+  span.align-center span img {
+    margin: 0 auto;
+    text-align: center; }
+span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px 0 0;
+    text-align: right; }
+  span.align-right span img {
+    margin: 0;
+    text-align: right; }
+span.float-left {
+  display: block;
+  margin-right: 13px;
+  overflow: hidden;
+  float: left; }
+  span.float-left span {
+    margin: 13px 0 0; }
+span.float-right {
+  display: block;
+  margin-left: 13px;
+  overflow: hidden;
+  float: right; }
+  span.float-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: right; }
+
+code, tt {
+  margin: 0 2px;
+  padding: 0 5px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px; }
+
+pre code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent; }
+
+.highlight pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+  pre code, pre tt {
+    background-color: transparent;
+    border: none; }
+
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+
+code {
+    white-space: pre-wrap;
+    word-break: break-all;
+    display: block;
+
+}
+* {
+ -webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 960px;
+        margin:0 auto;
+    }
+}
+@media print {
+ table, pre {
+  page-break-inside: avoid;
+ }
+ pre {
+  word-wrap: break-word;
+ }
+
+
+}
+   </style>
+   
+   
+</head>
+<body>
+    <h2>golang 最佳实践</h2>
+
+<h2>配置管理</h2>
+
+<p>在项目实际使用中建议采用xml作为配置文件。因为xml作为配置文件有以下几种优势:</p>
+
+<ol>
+<li>可以为所有节点添加注释。这些注释可以给程序部署人员提供详细的修改建议</li>
+<li>xml文件结构有较强层次性，反序列化处理更加方便</li>
+</ol>
+
+<p><a href="http://10.1.0.2/Moqikaka/goutil.git">goutil</a>里面已经包含了xml反序列化的工具包：goutil/configUtil。在项目里面使用时，建议如下：</p>
+
+<ol>
+<li><p>为配置建一个独立config包管理配置，并为每一类型建一个文件。如下所示:</p>
+
+<pre><code>-- Project
+-- src
+    -- config
+        -- init.go -----&gt; 整个配置的初始化逻辑
+        -- mysqlConfig.go -----&gt;记录mysql相关配置数据
+        -- redisConfig.go -----&gt;记录redis相关配置数据
+    -- 其他包
+</code></pre></li>
+<li><p>配置信息初始化在<a href="http://10.1.0.2/Moqikaka/Framework.git">framework</a>包中有对应的管理包:Framework/configMgr</p></li>
+<li><p><strong>configUtil.XmlConfig.Unmarshal 第二个参数需要外部实例化对象。内部只是字段赋值</strong></p></li>
+</ol>
+
+<h2>分包建议</h2>
+
+<p>golang是以一个文件夹对外提供功能，和C#类比，一个包就是一个程序集（dll）。所以，包内子文件夹越多，越容易导致循环引用。所以建议建子文件夹需要慎重。</p>
+
+<h2>三方引用建议</h2>
+
+<p>默认情况下，三方包通过go get命令是安装在GOPATH/src/网站名/用户名/项目名。这导致项目引用存在很多不确定性，特别是不同项目需要引用相同三方包的不同的版本时，会特别无奈。而golang的<strong>vendor</strong>机制可以有效解决此问题，因此建议如下：</p>
+
+<ol>
+<li><p>公司内部构建了一个三方引用项目:<a href="http://10.1.0.2/Moqikaka/vendor.git">vendor</a>。需要把此项目clone到<strong>GOPATH/src/moqikaka</strong>文件夹下，此时的文件夹结构如下:</p>
+
+<pre><code>-- GOPATH
+-- src
+-- moqikaka.com
+  -- Priject1
+  -- Prokect2
+  -- verdor
+    -- github.com
+      -- go-sql-driver
+      -- ......
+    -- golang.org
+      -- ......
+</code></pre></li>
+<li><p>如需新增三方依赖包，请联系此项目的维护人员</p></li>
+<li><p>如果某个项目需要引用已存在的特殊版本三方包，则请在项目内部通过vendor引用</p></li>
+</ol>
+
+<p>关于vendor的详细介绍请进--&gt;<a href="http://blog.csdn.net/hittata/article/details/52122071">传送门</a></p>
+
+<h2>golang陷阱及建议</h2>
+
+<h3>slice篇</h3>
+
+<p>slice详细介绍请进--&gt;<a href="http://blog.csdn.net/wangkai_123456/article/details/69676743">传送门</a></p>
+
+<ol>
+<li><p>一般情况下，在make slice时，建议指定其cap参数值，也就是make([]类型,0,n)。因为默认情况下，当已分配的空间用完后，默认处理方式是直接创建len(slice)*2的空间，如果cap有指定，则按照cap进行增量分配。</p></li>
+<li><p>在已有的切面s1的基础上取出的切面s2仍然是指向s1的。有且仅在对s2或s1操作导致重新分配内存时，才会指向不同。</p></li>
+</ol>
+
+<h3>map篇</h3>
+
+<ol>
+<li>map中的项是无序的，第一次for遍历的结果一般会和dier次for遍历的结果不同。（java和C#的遍历一般是固定顺序的）</li>
+</ol>
+
+<h3>for篇</h3>
+
+<ol>
+<li><p>for遍历元素时不能对for的临时变量进行取地址操作。具体如下:</p>
+
+<pre><code>func main() {
+    var s1 []*DType
+
+    dataMap := map[string]DType{
+        &quot;1&quot;: DType{Name: &quot;1&quot;},
+        &quot;2&quot;: DType{Name: &quot;2&quot;},
+        &quot;3&quot;: DType{Name: &quot;3&quot;},
+        &quot;4&quot;: DType{Name: &quot;4&quot;},
+        &quot;5&quot;: DType{Name: &quot;5&quot;},
+        &quot;6&quot;: DType{Name: &quot;6&quot;},
+        &quot;7&quot;: DType{Name: &quot;7&quot;},
+    }
+
+    for _, val := range dataMap {
+        s1 = append(s1, &amp;val)
+    }
+
+    for _, item := range s1 {
+        fmt.Println(&quot;Name:&quot;, item.Name)
+    }
+}
+type DType struct {
+    Name string
+}
+输出结果为:
+    Name: 1
+    Name: 1
+    Name: 1
+    Name: 1
+    Name: 1
+    Name: 1
+    Name: 1
+</code></pre></li>
+</ol>
+
+<h3>defer篇</h3>
+
+<ol>
+<li><p>for里面不要defer，因为defer始终是在函数调用结束时才会被调用。如需defer，请使用匿名函数处理。例如:</p>
+
+<pre><code>for _, val := range data {
+    func() {
+        val.LockObj.Lock()
+        defer val.LockObj.Unlock() 
+
+        val.Hello()
+    }()
+}
+</code></pre></li>
+<li><p>自己开的每一个协程均需要通过defer来recover异常，例如：</p>
+
+<pre><code>go func() {
+    defer func() {
+        if err := recover(); err != nil {
+            fmt.Println(&quot;异常了&quot;)
+        }
+    }()
+
+    fmt.Println(&quot;Hello&quot;)
+}()
+</code></pre>
+
+<p><a href="http://10.1.0.2/Moqikaka/Framework.git">FrameWork/goroutineMgr</a>提供了协程管理函数。当某个协程异常退出时，会上报监控系统，使用示例:</p>
+
+<pre><code>    // 推送排行数据给游戏服务器
+    go func() {
+        // 处理goroutine数量
+        registerName := &quot;fairpvp.pushRankToGS&quot;
+        // goroutineMgr.Monitor(registerName) , 用于注册需要确保有且只有一个协程，如果没有协程，则会报警
+        goroutineMgr.MonitorZero(registerName) //// 只是记录协程数量，不会进行报警
+        defer goroutineMgr.ReleaseMonitor(registerName)
+
+        pushRankToGS(redisMgr.Con_Hour_Rank)
+    }()
+</code></pre></li>
+</ol>
+
+</body>
+</html>
