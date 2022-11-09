@@ -23,3 +23,6 @@ kb 堆栈
 ~*kb 所有线程堆栈
 kv 包含clr的堆栈
 ~*kv 所有线程包含clr的堆栈
+
+6、其他调试工具
+debugdiag 2 analysis
