@@ -31,7 +31,7 @@
 	2、修改v2rayu的sock的host为：127.0.0.1，端口为:1080
 	3、修改v2rayu的http的host为：127.0.0.1，端口为:1081
 	4、保存并重启v2rayu
-	5、开启全局模式
+	5、开启v2rayu代理
 	6、输入以下命令：
 	7、sudo git config --global http.proxy 'socks5://127.0.0.1:1080'
 	8、sudo git config --global https.proxy 'socks5://127.0.0.1:1080'
