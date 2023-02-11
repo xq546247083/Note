@@ -1,0 +1,10 @@
+激活key1：
+slmgr /ipk PMM8K-4HPVY-DMC8Q-DBQVW-FKY8C
+
+激活key2：
+slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX
+slmgr /skms kms.03k.org
+slmgr /ato
+
+改变右键菜单为win10的菜单：
+reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve
