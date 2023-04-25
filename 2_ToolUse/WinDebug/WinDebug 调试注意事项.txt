@@ -10,6 +10,8 @@
 .load clr.dll
 .load mscordacwks.dll
 
+.loadby clr sos
+
 .load wow64exts
 
 5、分析CPU占用命令
