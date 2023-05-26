@@ -15,7 +15,7 @@ __VsDbgMetaVersion=
 __InstallLocation=
 
 # When SkipDownloads is set to true, no access to internet is made.
-__SkipDownloads=true
+__SkipDownloads=false
 
 # Launches VsDbg after downloading/upgrading.
 __LaunchVsDbg=false
@@ -444,21 +444,23 @@ download()
     target="$(echo "${__VsDbgVersion}" | tr '.' '-')"
     url="https://vsdebugger.azureedge.net/vsdbg-${target}/${vsdbgCompressedFile}"
 
-    check_internet_connection "$url"
+    echo "VS RemoteDebugger DonwLoadUrl:$url"
+    
+    # check_internet_connection "$url"
 
-    echo "Downloading ${url}"
-    if hash wget 2>/dev/null; then
-        wget -q "$url" -O "$vsdbgCompressedFile"
-    elif hash curl 2>/dev/null; then
-        curl -s "$url" -o "$vsdbgCompressedFile"
-    fi
+    # echo "Downloading ${url}"
+    # if hash wget 2>/dev/null; then
+    #     wget -q "$url" -O "$vsdbgCompressedFile"
+    # elif hash curl 2>/dev/null; then
+    #     curl -s "$url" -o "$vsdbgCompressedFile"
+    # fi
 
-    if [ $? -ne  0 ]; then
-        echo
-        echo "ERROR: Could not download ${url}"
-        exit 1;
-    fi
-
+    # if [ $? -ne  0 ]; then
+    #     echo
+    #     echo "ERROR: Could not download ${url}"
+    #     exit 1;
+    # fi
+    
     __VsdbgCompressedFile=$vsdbgCompressedFile
 }
 
