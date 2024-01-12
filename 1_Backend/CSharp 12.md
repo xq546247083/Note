@@ -150,6 +150,72 @@
 
 ---
 
+>## TAP异步 ConfigureAwait
+
+---
+
+	
+
+---
+
+>## TAP异步底层的实现方式之一（制造Task）
+
+---
+
+	public Task<int> DelayAsync(int second, CancellationToken cancellationToken)
+	{
+		return Task.Run(() =>
+		{
+			int i = 0;
+			for (i = 0; i < second; i++)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					break;
+				}
+
+				Thread.Sleep(1000);
+			}
+
+			return i;
+		}, cancellationToken);
+	}
+
+---
+
+>## TAP异步底层的实现方式之二（制造Task）
+
+---
+
+	TaskCompletionSource。在使用Task不方便的地方，使用该办法制造Task。
+
+	// 这里会等待，直到tcs.SetResult被执行。
+	await DelayAsync(5,new CancellationToken());
+	public Task<int> DelayAsync(int second, CancellationToken cancellationToken)
+	{
+		var tcs = new TaskCompletionSource<int>();
+		Task.Factory.StartNew(() =>
+		{
+			int i = 0;
+			for (i = 0; i < second; i++)
+			{
+				if (cancellationToken.IsCancellationRequested)
+				{
+					tcs.SetResult(i);
+					break;
+				}
+
+				Thread.Sleep(1000);
+			}
+
+			tcs.SetResult(i);
+		});
+
+		return tcs.Task;
+	}
+
+---
+
 >## TAP异步 操作多个异步
 
 ---
