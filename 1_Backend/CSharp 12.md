@@ -153,8 +153,13 @@
 >## TAP异步 ConfigureAwait
 
 ---
-
-	
+	1、await DoSomeThingAsync()等同于await DoSomeThingAsync().ConfigureAwait(true)。
+		这种情况下，异步方法直接等待 Task 时，延续任务通常会出现在创建任务的同一线程中。 此行为可能会降低性能，并且可能会导致 UI 线程发生死锁。
+	2、await DoSomeThingAsync().ConfigureAwait(false);
+		1、提升性能
+		2、避免死锁。
+		3、由于没有回到原来的线程，可能会导致更新UI报错。
+	具体见链接：https://www.cnblogs.com/xiaoxiaotank/p/13529413.html
 
 ---
 
