@@ -261,3 +261,151 @@
 	await后面执行的任务，如果有异常，建议直接捕获。因为如果调用方没有await的话，异常就被吃掉了。
 	
 ---
+
+>## TAP异步-其他
+
+---
+
+	Task.FromResult
+		Task.FromResult 方法的适用情景为，数据可能已存在，且只需通过提升到 Task<TResult> 的任务返回。例如：
+		return TryGetCachedValue(out cachedValue) ? Task.FromResult(cachedValue) :GetValueAsyncInternal();
+
+	Task.WhenAll
+		注意聚合异常AggregateException
+
+	Task.WhenAny
+		WhenAny 方法可用于异步等待多个表示为要完成的任务的异步操作之一。 此方法适用于四个主要用例：
+		1、冗余：多次执行一个操作并选择最先完成的一次（例如，联系能够生成一个结果的多个股市行情 Web 服务并选择完成最快的一个）。
+		2、交错：启动多个操作并等待所有这些操作完成，但是在完成这些操作时对其进行处理。
+		3、限制：允许其他操作完成时开始附加操作。 这是交错方案的扩展。
+		4、早期释放：例如，用任务 t1 表示的操作可以与任务 t2 组成 WhenAny 任务，您可以等待 WhenAny 任务。 任务 t2 可以表示超时、取消或其他一些导致 WhenAny 任务先于 t1 完成的信号。
+
+	Task.Delay
+		配合Task.WhenAny实现下载超时。
+		public async void btnDownload_Click(object sender, EventArgs e)
+		{
+			btnDownload.Enabled = false;
+			try
+			{
+				Task<Bitmap> download = GetBitmapAsync(url);
+				if (download == await Task.WhenAny(download, Task.Delay(3000)))
+				{
+					Bitmap bmp = await download;
+					pictureBox.Image = bmp;
+					status.Text = "Downloaded";
+				}
+				else
+				{
+					pictureBox.Image = null;
+					status.Text = "Timed out";
+					var ignored = download.ContinueWith(
+						t => Trace("Task finally completed"));
+				}
+			}
+			finally { btnDownload.Enabled = true; }
+		}
+		
+	实例：AsyncCache - 用来做异步缓存
+		// 异步缓存类
+		public class AsyncCache<TKey, TValue>
+		{
+			private readonly Func<TKey, Task<TValue>> _valueFactory;
+			private readonly ConcurrentDictionary<TKey, Lazy<Task<TValue>>> _map;
+
+			public AsyncCache(Func<TKey, Task<TValue>> valueFactory)
+			{
+				if (valueFactory == null) throw new ArgumentNullException("valueFactory");
+				_valueFactory = valueFactory;
+				_map = new ConcurrentDictionary<TKey, Lazy<Task<TValue>>>();
+			}
+
+			public Task<TValue> this[TKey key]
+			{
+				get
+				{
+					if (key == null) throw new ArgumentNullException("key");
+					return _map.GetOrAdd(key, toAdd =>
+						new Lazy<Task<TValue>>(() => _valueFactory(toAdd))).Value;
+				}
+			}
+		}
+
+		// 创建一个key为string，value为stirng的异步缓存实例
+		private AsyncCache<string,string> m_webPages = new AsyncCache<string,string>(DownloadStringTaskAsync);
+
+		// 使用异步缓存，只会第一次下载，后面都是缓存。
+		private async void btnDownload_Click(object sender, RoutedEventArgs e)
+		{
+			btnDownload.IsEnabled = false;
+			try
+			{
+				txtContents.Text = await m_webPages["https://www.microsoft.com"];
+			}
+			finally { btnDownload.IsEnabled = true; }
+		}
+		
+	实例：AsyncProducerConsumerCollection -用来做异步的生产者、消费者
+		// 异步的生产者、消费者类
+		public class AsyncProducerConsumerCollection<T>
+		{
+			private readonly Queue<T> m_collection = new Queue<T>();
+			private readonly Queue<TaskCompletionSource<T>> m_waiting = new Queue<TaskCompletionSource<T>>();
+
+			public void Add(T item)
+			{
+				TaskCompletionSource<T> tcs = null;
+				lock (m_collection)
+				{
+					// m_waiting有数据，代表m_collection当前没有数据，取走TaskCompletionSource，通过tcs.TrySetResult(item)直接返回当前新增的数据。
+					if (m_waiting.Count > 0){
+						tcs = m_waiting.Dequeue();
+					}
+					else{
+						m_collection.Enqueue(item);
+					}
+				}
+				if (tcs != null){
+					tcs.TrySetResult(item);
+				}
+			}
+
+			public Task<T> Take()
+			{
+				lock (m_collection)
+				{
+					if (m_collection.Count > 0)
+					{
+						// 有数据，直接取走
+						return Task.FromResult(m_collection.Dequeue());
+					}
+					else
+					{
+						// 没有数据，创建一个TaskCompletionSource入队，表示当前没有任务了。
+						var tcs = new TaskCompletionSource<T>();
+						m_waiting.Enqueue(tcs);
+						return tcs.Task;
+					}
+				}
+			}
+		}
+
+		// 创建一个异步的生产者、消费者实例
+		private static AsyncProducerConsumerCollection<int> m_data = …;
+
+		private static async Task ConsumerAsync()
+		{
+			while(true)
+			{
+				// 1、取走m_collection出队的数据。
+				// 2、通过TaskCompletionSource取走才新增的数据。
+				int nextItem = await m_data.Take();
+				ProcessNextItem(nextItem);
+			}
+		}
+
+		private static void Produce(int data)
+		{
+			m_data.Add(data);
+		}
+
+---
