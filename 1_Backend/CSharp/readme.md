@@ -1,31 +1,31 @@
 # CSharp
 
-## 0?CSharp12
+## 0、CSharp12
 
-[??????](https://learn.microsoft.com/zh-cn/dotnet/csharp "C#??")
+[阅读文档链接](https://learn.microsoft.com/zh-cn/dotnet/csharp "C#文档")
 
-[????](0?CSharp12.md)
+[笔记链接](0、CSharp12.md)
 
-## 1???.NET??
+## 1、高级.NET编程
 
-[??????](https://learn.microsoft.com/zh-cn/dotnet/navigate/advanced-programming "??.NET??")
+[阅读文档链接](https://learn.microsoft.com/zh-cn/dotnet/navigate/advanced-programming "高级.NET编程")
 
-[????](1?????.md)
+[笔记链接](1、线程处理.md)
 
-## 3?DotNet
+## 3、DotNet
 
-[??????](https://learn.microsoft.com/zh-cn/dotnet/fundamentals "DotNet")
+[阅读文档链接](https://learn.microsoft.com/zh-cn/dotnet/fundamentals "DotNet")
 
-[????]()
+[笔记链接]()
 
-## 4?ASP.NET Core
+## 4、ASP.NET Core
 
-[??????](https://learn.microsoft.com/zh-cn/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-7.0 "ASP.NET Core")
+[阅读文档链接](https://learn.microsoft.com/zh-cn/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-7.0 "ASP.NET Core")
 
-[????]()
+[笔记链接]()
 
-## 5?ABP
+## 5、ABP
 
-[??????](https://docs.abp.io/zh-Hans/abp/latest/Tutorials/Todo/Index?UI=MVC&DB=EF "ABP")
+[阅读文档链接](https://docs.abp.io/zh-Hans/abp/latest/Tutorials/Todo/Index?UI=MVC&DB=EF "ABP")
 
-[????]()
+[笔记链接]()
