@@ -1,4 +1,5 @@
-macOS 禁用更新：
+# macOS 禁用更新
+
 关闭「系统偏好」里的「自动更新」
 删除 ~/Library/Preferences/com.apple.preferences.softwareupdate.plist
 修改更新服务器：
