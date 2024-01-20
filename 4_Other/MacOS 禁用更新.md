@@ -11,3 +11,8 @@
 	3、恢复：
 	sudo defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 	执行完成后重新打开一次更新检查就可以了。
+
+ # 其他
+
+	关闭Edge系统版本过低警告：
+ 	defaults write com.microsoft.Edge SuppressUnsupportedOSWarning -bool true
