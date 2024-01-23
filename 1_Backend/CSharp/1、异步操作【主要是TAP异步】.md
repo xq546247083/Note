@@ -230,7 +230,7 @@
 	
 	async Task和async viod区别
 		async Task:可以用await来等待
-		async viod：无法用await来等待。
+		async viod：无法用await来等待。这种方式，注意在内部处理异常。
 		如果要表示方法是完全不可等待的异步方法，用void。
 
 	实例：AsyncCache - 用来做异步缓存
