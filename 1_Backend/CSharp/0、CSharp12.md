@@ -76,3 +76,25 @@
 	Console.WriteLine($"{{ HasValue = {hasValue}, Value = {value} }}");
 
 ---
+
+>## 属性
+
+---
+
+	required
+		设置为要求的
+	init
+		可以初始化
+
+	案例：
+	public class Person
+	{
+		public Person() { }
+
+		[SetsRequiredMembers]
+		public Person(string firstName) => FirstName = firstName;
+
+		public required string FirstName { get; init; }
+	}
+
+---
