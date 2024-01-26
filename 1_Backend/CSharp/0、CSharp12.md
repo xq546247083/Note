@@ -180,8 +180,22 @@
 
 ---
 
->## 委托和事件
+>## 捕捉非CLS异常
 
 ---
 
+	使用RuntimeWrappedException捕获异常：
+	try
+	{
+		myClass.TestThrowNotClsExcepiton();
+	}
+	catch (RuntimeWrappedException e)
+	{
+		String s = e.WrappedException as String;
+		if (s != null)
+		{
+			Console.WriteLine(s);
+		}
+	}
+	
 ---
