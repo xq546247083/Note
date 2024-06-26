@@ -231,3 +231,20 @@
 	5、在 ref struct 定义中，声明 ref 字段。
 
 ---
+
+
+>## 新增的关键字
+
+---
+
+	1、operator 和 implicit 或 explicit 关键字分别用于定义隐式转换或显式转换。
+	2、required：可以使用 required 关键字强制调用方使用对象初始值设定项设置属性或字段的值。 不需要将所需属性设置为构造函数参数。 编译器可确保所有调用方初始化这些值。
+	3、init：在创建对象的时候可以初始化赋值。（get、set、init）
+	4、索引器
+		public T this[int i]
+		{
+			get { return arr[i]; }
+			set { arr[i] = value; }
+		}
+
+---
