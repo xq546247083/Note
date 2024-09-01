@@ -28,14 +28,19 @@
 # 用vpn加速git clone方法
 
 	1、下载安装v2rayu等软件
-	2、修改v2rayu的sock的host为：127.0.0.1，端口为:1080
-	3、修改v2rayu的http的host为：127.0.0.1，端口为:1081
+	2、修改v2rayu的sock的host为：127.0.0.1，端口为:10808
+	3、修改v2rayu的http的host为：127.0.0.1，端口为:10809
 	4、保存并重启v2rayu
 	5、开启v2rayu代理
-	6、输入以下命令：
-	7、sudo git config --global http.proxy 'socks5://127.0.0.1:1080'
-	8、sudo git config --global https.proxy 'socks5://127.0.0.1:1080'
-	9、可以愉快的clone和push了
+
+	6、Mac输入以下命令：
+		sudo git config --global http.proxy 'socks5://127.0.0.1:10808'
+		sudo git config --global https.proxy 'socks5://127.0.0.1:10808'
+
+	7、Windows输入以下命令：
+		git config --global http.proxy http://127.0.0.1:10809
+		git config --global https.proxy https://127.0.0.1:10809
+
 
 
 ---
