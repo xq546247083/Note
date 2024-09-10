@@ -16,15 +16,21 @@
 
 [阅读文档链接](https://learn.microsoft.com/zh-cn/dotnet/fundamentals "DotNet")
 
-[笔记链接]()
+[笔记链接](2、Net.md)
 
-## 3、ASP.NET Core
+## 3、Entity Framework
+
+[阅读文档链接](https://learn.microsoft.com/zh-cn/ef/efcore-and-ef6/ "Entity Framework")
+
+[笔记链接](3、Entity Framework.md)
+
+## 4、ASP.NET Core
 
 [阅读文档链接](https://learn.microsoft.com/zh-cn/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-7.0 "ASP.NET Core")
 
 [笔记链接]()
 
-## 4、ABP
+## 5、ABP
 
 [阅读文档链接](https://docs.abp.io/zh-Hans/abp/latest/Tutorials/Todo/Index?UI=MVC&DB=EF "ABP")
 
