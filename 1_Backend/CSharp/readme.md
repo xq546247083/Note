@@ -22,7 +22,7 @@
 
 [阅读文档链接](https://learn.microsoft.com/zh-cn/ef/efcore-and-ef6/ "Entity Framework")
 
-[笔记链接](3、Entity Framework.md)
+[笔记链接](3、EF.md)
 
 ## 4、ASP.NET Core
 
