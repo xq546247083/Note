@@ -10,17 +10,4 @@
 
 ---
 
->## EF Core
-
----
-
-    1、EF8 复杂类型
-        数据库的字段，可以使用类来表示。一个表可以用多个类组合成一个类来表达。具体见以下链接
-    
-[链接](https://learn.microsoft.com/zh-cn/ef/core/what-is-new/ef-core-8.0/whatsnew#value-objects-using-complex-types)
-
-    2、
-
----
-
 
