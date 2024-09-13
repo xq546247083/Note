@@ -252,6 +252,89 @@
 
 ---
 
+>## 创建DB
+
+---
+
+[链接](https://learn.microsoft.com/zh-cn/ef/core/dbcontext-configuration/)
+
+---
 
 
+>## 使用DbContext Pool
 
+---
+
+    1、依赖注入：
+        builder.Services.AddDbContextPool<WeatherForecastContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("WeatherForecastContext")));
+
+    2、没有依赖注入：
+        var options = new DbContextOptionsBuilder<PooledBloggingContext>()
+            .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Blogging;Trusted_Connection=True;ConnectRetryCount=0")
+            .Options;
+
+        var factory = new PooledDbContextFactory<PooledBloggingContext>(options);
+
+        using (var context = factory.CreateDbContext())
+        {
+            var allPosts = context.Posts.ToList();
+        }
+
+---
+
+>## 配置实体
+
+---
+
+    1、DBContext中配置
+        internal class MyContext : DbContext
+        {
+            public DbSet<Blog> Blogs { get; set; }
+
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                modelBuilder.Entity<Blog>()
+                    .Property(b => b.Url)
+                    .IsRequired();
+            }
+        }
+    2、为了减小 OnModelCreating 方法的大小，可以将实体类型的所有配置提取到实现 IEntityTypeConfiguration<TEntity> 的单独类中。
+        public class BlogEntityTypeConfiguration : IEntityTypeConfiguration<Blog>
+        {
+            public void Configure(EntityTypeBuilder<Blog> builder)
+            {
+                builder
+                    .Property(b => b.Url)
+                    .IsRequired();
+            }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            new BlogEntityTypeConfiguration().Configure(modelBuilder.Entity<Blog>());
+        }
+
+        可以在给定程序集中应用实现 IEntityTypeConfiguration 的类型中指定的所有配置：
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(BlogEntityTypeConfiguration).Assembly);
+    3、对实体类型使用 EntityTypeConfigurationAttribute
+        [EntityTypeConfiguration(typeof(BookConfiguration))]
+        public class Book
+        {
+            public int Id { get; set; }
+            public string Title { get; set; }
+            public string Isbn { get; set; }
+        }
+---
+
+>## 实体对象和实体对象的关系
+
+---
+
+    1、体现在表中的外键关联。
+    2、可以实现添加一个对象，多表插入的数据。
+    3、
+        一对多关系：单个实体与任意数量的其他实体关联。
+        一对一关系：单个实体与另一个实体关联。
+        多对多关系：任意数量的实体与任意数量的其他实体关联。
+
+---
