@@ -198,6 +198,17 @@
                INNER JOIN Blogs AS b ON p.BlogId = b.Id")
         .Where(p => p.PublishedOn >= cutoffDate && p.PublishedOn < end)
         .ToListAsync();
+    3、使用{user}的方式，可以防止SQL注入。
+    var user = "johndoe";
+    var blogs = context.Blogs
+        .FromSql($"SELECT * FROM [Blogs] WHERE User = {user}")
+        .ToList();
+    4、动态构建SQL(非SQL注入安全)
+        var columnName = "Url";
+        var columnValue = new SqlParameter("columnValue", "http://SomeURL");
+        var blogs = context.Blogs
+            .FromSqlRaw($"SELECT * FROM [Blogs] WHERE {columnName} = @columnValue", columnValue)
+            .ToList();
 
 ---
 
@@ -326,6 +337,23 @@
         }
 ---
 
+>## 分页
+
+---
+
+    1、偏移分页
+        使用数据库实现分页的一种常见方法是使用 Skip 和 Take（SQL 中的 OFFSET 和 LIMIT）。遗憾的是，虽然这种技术非常直观，但也存在严重的缺点，性能较差。
+    2、键集分页
+        基于偏移的分页的建议替代方法（有时称为 键集分页或基于查找的分页分页）是简单地使用 WHERE 子句跳过行，而不是偏移量。 这意味着要记住提取的最后一个条目中的相关值（而不是其偏移量），并请求在该行之后的下一行。 例如，假设提取的上一页中最后一个条目 ID 值为 55，则只需执行以下操作：
+        var lastId = 55;
+        var nextPage = context.Posts
+            .OrderBy(b => b.PostId)
+            .Where(b => b.PostId > lastId)
+            .Take(10)
+            .ToList();
+
+---
+
 >## 实体对象和实体对象的关系
 
 ---
@@ -336,5 +364,29 @@
         一对多关系：单个实体与任意数量的其他实体关联。
         一对一关系：单个实体与另一个实体关联。
         多对多关系：任意数量的实体与任意数量的其他实体关联。
+
+---
+
+>## EF 代码生成器
+
+---
+
+    可以从数据库自动生成Model、EntityTypeConfiguration。
+    参考链接1、链接2
+
+[链接1](https://learn.microsoft.com/zh-cn/ef/core/managing-schemas/scaffolding/?tabs=dotnet-core-cli)
+[链接2](https://learn.microsoft.com/zh-cn/ef/core/managing-schemas/scaffolding/templates?tabs=dotnet-core-cli)
+
+---
+
+>## EF 日志记录
+
+---
+
+    记录EF的操作日志。
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)=> optionsBuilder.LogTo(Console.WriteLine);
+    参考链接
+
+[链接](https://learn.microsoft.com/zh-cn/ef/core/logging-events-diagnostics/simple-logging)
 
 ---
