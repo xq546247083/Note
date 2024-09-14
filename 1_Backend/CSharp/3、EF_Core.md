@@ -367,6 +367,18 @@
 
 ---
 
+>## 更新数据
+
+---
+
+    1、获取、设置实体以及实体的属性的状态
+        db.Entry(book).State;
+        db.Entry(book).Property(r=>r.ID).IsModified;
+    2、DbSet 的 Local 属性提供对当前由上下文跟踪且未标记为已删除的集实体的简单访问。 访问 Local 属性永远不会将查询发送到数据库。 这意味着，它通常在执行查询后使用。 
+        db.Entry(book).Local;
+        
+---
+
 >## EF 代码生成器
 
 ---
