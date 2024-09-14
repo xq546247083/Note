@@ -376,7 +376,20 @@
         db.Entry(book).Property(r=>r.ID).IsModified;
     2、DbSet 的 Local 属性提供对当前由上下文跟踪且未标记为已删除的集实体的简单访问。 访问 Local 属性永远不会将查询发送到数据库。 这意味着，它通常在执行查询后使用。 
         db.Entry(book).Local;
-        
+    3、Attach的使用，避免更新、删除时，需要先查询数据出来。EF 的处理方式如下：
+        1、把对象附加到上下文中，并把状态改为Modified状态。
+        2、调用Savechange方法时生成一段Update的SQL语句且Where条件为对象的主键Id，因为EF更新和删除都是根据主键ID来处理的。
+        public void Update(Product product)
+        {
+            using(Entities ctx = new Entities) 
+            {
+                ctx.Attach(product);
+                // 删除使用这个:EntityState.Deleted
+                ctx.ObjectStateManager.ChangeObjectState(entity,EntityState.Modified) 
+                ctx.SaveChange();
+            }
+        }
+
 ---
 
 >## EF 代码生成器
