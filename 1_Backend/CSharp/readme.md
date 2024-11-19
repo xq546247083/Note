@@ -28,7 +28,7 @@
 
 [阅读文档链接](https://learn.microsoft.com/zh-cn/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-7.0 "ASP.NET Core")
 
-[笔记链接]()
+[笔记链接](4、ASPNETCore.md)
 
 ## 5、ABP
 
