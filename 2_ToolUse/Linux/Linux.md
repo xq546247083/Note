@@ -14,6 +14,10 @@
 	firewall-cmd --zone=public --add-port=80/tcp --permanent
 	5、防火墙重启
 	service firewalld restart
+	6、查看磁盘信息
+	df -h /etc
+	7、查看文件大小
+	du
 
 ---
 
