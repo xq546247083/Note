@@ -8,5 +8,7 @@
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
+    也可以通过修改项目类型：
+    <Project Sdk="Microsoft.NET.Sdk">修改为<Project Sdk="Microsoft.NET.Sdk.Web">
 
 ---
