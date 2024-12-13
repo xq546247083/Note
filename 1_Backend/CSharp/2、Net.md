@@ -35,5 +35,15 @@
 
     作用：
         生产者、消费者的模型。
+        var channel = Channel.CreateUnbounded<T>();
+        var channel = Channel.CreateBounded<T>(7);
+
+        while (true)
+        {
+            // May throw ChannelClosedException if
+            // the parent channel's writer signals complete.
+            var obj = await reader.ReadAsync();
+            Console.WriteLine(obj);
+        }
     
 ---
