@@ -4,6 +4,8 @@
 
 ---
 
+	0、dos2unix demo.sh
+	解决sh文件格式不正确的问题
 	1、安装rpm包
 	sudo rpm -ivh lsof-4.87-4.el7.src.rpm 
 	2、查看操作系统
