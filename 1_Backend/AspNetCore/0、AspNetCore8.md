@@ -89,3 +89,93 @@
             .UseStartup<Startup>().Build().Run();
 
 ---
+
+>## 配置
+
+---
+
+    读取配置,方案1（如果在配置中找不到 NumberKey，则使用默认值 99。）：
+        private readonly IConfiguration Configuration;
+        public TestModel(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+        public ContentResult OnGet()
+        {
+            var number = Configuration.GetValue<int>("NumberKey", 99);
+        }
+    读取配置,方案2：
+        private readonly IConfiguration Configuration;
+        public TestModel(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+        public ContentResult OnGet()
+        {
+            var myKeyValue = Configuration["MyKey"];
+            var title = Configuration["Position:Title"];
+        }
+    
+    读取配置,方案3：
+        public class PositionOptions
+        {
+            public const string Position = "Position";
+
+            public string Title { get; set; } = String.Empty;
+            public string Name { get; set; } = String.Empty;
+        }
+
+        public class Test22Model : PageModel
+        {
+            private readonly IConfiguration Configuration;
+            public Test22Model(IConfiguration configuration)
+            {
+                Configuration = configuration;
+            }
+
+            public ContentResult OnGet()
+            {
+                var positionConfiguration = Configuration.GetSection(PositionOptions.Position);
+                if (!positionConfiguration.Exists())
+                {
+                    throw new Exception("section2 does not exist.");
+                }
+                var positionOptions = positionConfiguration.Get<PositionOptions>();
+            }
+        }
+    读取配置,方案4：
+        该方案，不会读取在应用启动后对 JSON 配置文件所做的更改。 若要读取在应用启动后的更改，请使用 IOptionsSnapshot。
+        builder.Services.Configure<PositionOptions>(builder.Configuration.GetSection(PositionOptions.Position));
+        public class Test2Model : PageModel
+        {
+            private readonly PositionOptions _options;
+            // 读取在应用启动后的更改,使用IOptionsSnapshot
+            public Test2Model(IOptions<PositionOptions> options)
+            {
+                _options = options.Value;
+            }
+        }
+    添加自定义配置Json（可用于非当前程序目录的Json配置文件）:
+        builder.Configuration.AddJsonFile("MyConfig.json",optional: true,reloadOnChange: true);
+    添加内存配置：
+        var configDic = new Dictionary<string, string>
+        {
+           {"MyKey", "Dictionary MyKey Value"},
+           {"Position:Title", "Dictionary_Title"},
+        };
+        builder.Configuration.AddInMemoryCollection(configDic);
+    启动时，修改配置：
+        builder.Services.Configure<MyOptions>(myOptions =>
+        {
+            myOptions.Option1 = "Value configured in delegate";
+            myOptions.Option2 = 500;
+        });
+    启动时，显示所有的配置：
+        var builder = WebApplication.CreateBuilder(args);
+        var app = builder.Build();
+        foreach (var c in builder.Configuration.AsEnumerable())
+        {
+            Console.WriteLine(c.Key + " = " + c.Value);
+        }
+
+---
