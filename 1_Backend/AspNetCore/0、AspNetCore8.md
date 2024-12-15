@@ -203,3 +203,12 @@
         public AboutModel(ILogger<AboutModel> logger)
 
 ---
+
+>## 记录所有的HTTP请求和响应
+
+---
+
+    builder.Services.AddHttpLogging(o => { });
+    app.UseHttpLogging();
+
+---
