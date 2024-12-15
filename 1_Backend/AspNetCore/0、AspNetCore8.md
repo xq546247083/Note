@@ -212,3 +212,79 @@
     app.UseHttpLogging();
 
 ---
+
+>## HttpClient
+
+---
+
+    1、简单使用：
+        builder.Services.AddHttpClient();
+        public BasicModel(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+        var httpClient = _httpClientFactory.CreateClient();
+    2、命名HttpClient：
+        builder.Services.AddHttpClient("GitHub", httpClient =>
+        {
+            httpClient.BaseAddress = new Uri("https://api.github.com/");
+
+            // using Microsoft.Net.Http.Headers;
+            // The GitHub API requires two headers.
+            httpClient.DefaultRequestHeaders.Add(
+                HeaderNames.Accept, "application/vnd.github.v3+json");
+            httpClient.DefaultRequestHeaders.Add(
+                HeaderNames.UserAgent, "HttpRequestsSample");
+        });
+        var httpClient = _httpClientFactory.CreateClient("GitHub");
+    3、HttpClient中间件(可以统一添加异常处理、日志等):
+        HttpClient 具有委托处理程序的概念，这些委托处理程序DelegatingHandler可以链接在一起，处理出站 HTTP 请求。
+        public class ValidateHeaderHandler : DelegatingHandler
+        {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                if (!request.Headers.Contains("X-API-KEY"))
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent(
+                            "The API key header X-API-KEY is required.")
+                    };
+                }
+
+                return await base.SendAsync(request, cancellationToken);
+            }
+        }
+        // 先运行ValidateHeaderHandler先运行，再运行 SampleHandler2,最终 HttpClientHandler 执行请求。
+        builder.Services.AddHttpClient("HttpMessageHandler")
+        .AddHttpMessageHandler<ValidateHeaderHandler>()
+        .AddHttpMessageHandler<SampleHandler2>();
+    4、使用Nuget Polly包
+        请求失败后最多可以重试三次，每次尝试间隔 600 ms
+            builder.Services.AddHttpClient("PollyWaitAndRetry")
+            .AddTransientHttpErrorPolicy(policyBuilder =>policyBuilder.WaitAndRetryAsync(3, retryNumber => TimeSpan.FromMilliseconds(600)));
+        如果出站请求为 HTTP GET，则应用 10 秒超时。 其他所有 HTTP 方法应用 30 秒超时。
+            var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(10));
+            var longTimeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(30));
+            builder.Services.AddHttpClient("PollyDynamic")
+                .AddPolicyHandler(httpRequestMessage =>httpRequestMessage.Method == HttpMethod.Get ? timeoutPolicy : longTimeoutPolicy);
+        Polly 注册表添加策略
+            var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(10));
+            var longTimeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(30));
+
+            var policyRegistry = builder.Services.AddPolicyRegistry();
+            policyRegistry.Add("Regular", timeoutPolicy);
+            policyRegistry.Add("Long", longTimeoutPolicy);
+
+            builder.Services.AddHttpClient("PollyRegistryLong")
+            .AddPolicyHandlerFromRegistry("Long")
+            .AddPolicyHandlerFromRegistry("Regular");            
+    5、在控制台程序中使用HttpClient,引用以下2个包：
+        Microsoft.Extensions.Hosting
+        Microsoft.Extensions.Http
+        var host = new HostBuilder().ConfigureServices(services =>
+        {
+            services.AddHttpClient();
+        })=.Build();
+    
+---

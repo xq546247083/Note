@@ -29,6 +29,7 @@
     9、HttpContext.User属性用于获取或设置请求的用户。
     10、HttpContext.Features 属性提供对当前请求的功能接口集合的访问。
         var feature = context.Features.Get<IHttpMinRequestBodyDataRateFeature>();
+        var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
     11、HttpContext并非线程安全型。
 
 
