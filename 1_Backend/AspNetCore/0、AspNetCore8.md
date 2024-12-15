@@ -177,5 +177,19 @@
         {
             Console.WriteLine(c.Key + " = " + c.Value);
         }
+    修改配置文件appsettings.json：
+        // 对appsettings.json文件修改，使用IOptions读取配置参数不会读取到新的配置，因为该接口实例被注册为全局单例生命周期。
+        // 所以同时要对IOptions的对象进行修改。
+        var filePath = Path.Combine(webHostEnvironment.ContentRootPath, "appsettings.json");
+        var text = System.IO.File.ReadAllText(filePath);
+
+        // 修改配置项 
+        JObject obj = JObject.Parse(text);
+        obj["Author"] = "Herry";
+        obj["AppSettings"]["MaxLevel"] = 20;
+
+        // 重新写入
+        appsettings.json string result = obj.ToString();
+        System.IO.File.WriteAllText(filePath, result);
 
 ---
