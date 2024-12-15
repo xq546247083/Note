@@ -193,3 +193,13 @@
         System.IO.File.WriteAllText(filePath, result);
 
 ---
+
+>## 日志
+
+---
+
+    可以结合NLog把日志输出到文件。
+    使用方式:
+        public AboutModel(ILogger<AboutModel> logger)
+
+---
