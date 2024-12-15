@@ -32,5 +32,4 @@
         var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
     11、HttpContext并非线程安全型。
 
-
 ---
