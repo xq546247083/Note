@@ -288,3 +288,25 @@
         })=.Build();
     
 ---
+
+>## ¾²Ì¬ÎÄ¼þ
+
+---
+
+    Ä¿Â¼ä¯ÀÀ
+        builder.Services.AddDirectoryBrowser();
+
+        var fileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.WebRootPath, "images"));
+        var requestPath = "/MyImages";
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = fileProvider,
+            RequestPath = requestPath
+        });
+        app.UseDirectoryBrowser(new DirectoryBrowserOptions
+        {
+            FileProvider = fileProvider,
+            RequestPath = requestPath
+        });
+        
+---
