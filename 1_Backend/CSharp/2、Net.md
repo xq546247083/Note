@@ -47,3 +47,15 @@
         }
     
 ---
+
+>## 修改私有变量
+
+---
+
+    var person = new Person();
+    GetAgeField(person) = 100;
+
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_age")]
+    static extern ref int GetAgeField(Person counter);
+
+---
