@@ -85,5 +85,48 @@
         }
     7、MarkupString
         若要呈现原始 HTML，请将 HTML 内容包装在 MarkupString 值中。 将该值分析为 HTML 或 SVG，并插入到 DOM 中。
-        
+    8、支持泛型
+        @typeparam TEntity where TEntity : IEntity
+    9、如果组件必须根据外部事件（如计时器或其他通知）进行更新，请使用 InvokeAsync 方法，它将代码执行调度到 Blazor 的同步上下文。
+        protected override void OnInitialized()
+        {
+            AutoIncrementCount();
+            base.OnInitialized();
+        }
+        private  void AutoIncrementCount() 
+        {
+            Task.Run(async () => 
+            {
+                while (true) 
+                {
+                    await this.InvokeAsync(() =>
+                    {
+                        currentCount++;
+                        StateHasChanged();
+                    });
+                    await Task.Delay(1000);
+                }
+            });
+        }
+    10、@key
+        优化多元素、列表等的表现，foreach等。
+    11、后台代码给前端设置任意属性。（非常有用）
+        <input id="useAttributesDict"
+            @attributes="InputAttributes" />
+        @code {
+            [Parameter(CaptureUnmatchedValues = true)]
+            private Dictionary<string, object> InputAttributes { get; set; } =
+                new()
+                {
+                    { "maxlength", "10" },
+                    { "size", "50" }
+                };
+        }
+    12、布局组件
+        1、创建布局组件，继承LayoutComponentBase，使用@Body渲染页面。
+            @inherits LayoutComponentBase
+            @Body
+        2、页面使用布局组件
+            @layout DoctorWhoLayout
+
 ---
