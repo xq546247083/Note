@@ -128,5 +128,130 @@
             @Body
         2、页面使用布局组件
             @layout DoctorWhoLayout
+    13、多个页面之间共享数据。CascadingValue组件的主要优势是简化了组件之间的数据传递。
+        // 注册
+        builder.Services.AddCascadingValue(sp => new Dalek { Units = 123 });
+        builder.Services.AddCascadingValue("AlphaGroup", sp => new Dalek { Units = 456 });
+
+        // 使用
+        <ul>
+            <li>Dalek Units: @Dalek?.Units</li>
+            <li>Alpha Group Dalek Units: @AlphaGroupDalek?.Units</li>
+        </ul>
+        @code {
+            [CascadingParameter]
+            public Dalek? Dalek { get; set; }
+
+            [CascadingParameter(Name = "AlphaGroup")]
+            public Dalek? AlphaGroupDalek { get; set; }
+        }
+    14、绑定功能
+        1、@bind:指定要绑定、更改的值。
+        2、@bind:get：指定要绑定的值。
+        3、@bind:set：指定值更改时的回调。
+        4、与组件参数绑定,常见方案是将子组件中的属性绑定到其父组件中的属性。
+            <p>
+                <label>
+                    Decimal value (±0.000 format):<input @bind="DecimalValue" />
+                </label>
+            </p>
+            @code {
+                private decimal decimalValue = 1.1M;
+                private NumberStyles style = NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign;
+                private CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
+
+                private string DecimalValue
+                {
+                    get => decimalValue.ToString("0.000", culture);
+                    set
+                    {
+                        if (Decimal.TryParse(value, style, culture, out var number))
+                        {
+                            decimalValue = Math.Round(number, 3);
+                        }
+                    }
+                }
+            }
+    15、虚拟化列表
+        <div style="height:500px;overflow-y:scroll">
+            <Virtualize Items="allFlights" Context="flight">
+                <FlightSummary @key="flight.FlightId" Details="@flight.Summary" />
+            </Virtualize>
+        </div>
+    16、动态组件，组件类型是动态的，通过Type指定。
+        <DynamicComponent Type="componentType" Parameters="parameters" />
+        @code {
+            private Type componentType = ...;
+            private IDictionary<string, object> parameters = ...;
+        }
+    17、QuickGrid
+        数据表格
+
+---
+
+>## 模板组件
+
+---
+
+    1、定义模板组件
+    TemplatedNavBar.razor:
+    @typeparam TItem
+
+    <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="container justify-content-start">
+            @StartContent
+            <div class="navbar-nav">
+                @foreach (var item in Items)
+                {
+                     <tr @key="@item">@ItemTemplate(item)</tr>
+                }
+            </div>
+        </div>
+    </nav>
+
+    @code {
+        [Parameter]
+        public RenderFragment? StartContent { get; set; }
+
+        [Parameter, EditorRequired]
+        public RenderFragment<TItem> ItemTemplate { get; set; } = default!;
+
+        [Parameter, EditorRequired]
+        public IReadOnlyList<TItem> Items { get; set; } = default!;
+    }
+
+    2、使用模板组件
+    Pets.razor:
+    @page "/pets-1"
+
+    <PageTitle>Pets 1</PageTitle>
+
+    <h1>Pets Example 1</h1>
+
+    <TemplatedNavBar Items="pets" Context="pet">
+        <StartContent>
+            <a href="/" class="navbar-brand">PetsApp</a>
+        </StartContent>
+        <ItemTemplate>
+            <NavLink href="@($"/pet-detail/{pet.PetId}?ReturnUrl=%2Fpets-1")" class="nav-link">
+                @pet.Name
+            </NavLink>
+        </ItemTemplate>
+    </TemplatedNavBar>
+
+    @code {
+        private List<Pet> pets = new()
+        {
+            new Pet { PetId = 1, Name = "Mr. Bigglesworth" },
+            new Pet { PetId = 2, Name = "Salem Saberhagen" },
+            new Pet { PetId = 3, Name = "K-9" }
+        };
+
+        private class Pet
+        {
+            public int PetId { get; set; }
+            public string? Name { get; set; }
+        }
+    }
 
 ---
