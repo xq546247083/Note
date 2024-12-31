@@ -255,3 +255,19 @@
     }
 
 ---
+
+>## JavaScript互操作
+
+---
+
+    1、Net调用JavaScript
+        IJSRuntime 由 Blazor 框架注册。 若要从 .NET 调入 JS，请注入 IJSRuntime 抽象并调用以下方法之一：
+            IJSRuntime.InvokeAsync
+            JSRuntimeExtensions.InvokeAsync
+            JSRuntimeExtensions.InvokeVoidAsync
+        案例：
+        @inject IJSRuntime JS
+        private async Task ConvertArray() => text = new(await JS.InvokeAsync<string>("convertArray", quoteArray));
+    2、JavaScript调用Net
+
+---
