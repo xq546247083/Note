@@ -1,6 +1,66 @@
 # Razor
 
->## Razor
+
+>## Razor语法（.razor、.cshtml、MVC视图）
+
+--
+
+    1、@if, else if, else, and @switch
+        条件语句
+    2、@for, @foreach, @while, and @do while
+        循环语句
+    3、@using
+        在 C# 中，using 语句用于确保释放对象。 在 Razor 中，可使用相同的机制来创建包含附加内容的 HTML 帮助程序。
+    4、@try, catch, finally
+        异常处理
+    5、@lock
+        锁
+    6、 @attribute，案例如下：
+        @attribute [Authorize]
+    7、@implements
+        实现接口
+    8、@inherits
+        继承类
+    9、@inject
+        注入实例
+    10、@model
+        此方案仅适用于 MVC 视图和 Razor Pages (.cshtml)。
+    11、@namespace
+    12、@page
+    13、@section
+        @section 指令与 MVC 和 RazorPages 布局 结合使用，允许视图或页面将内容呈现在 HTML 页面的不同部分。
+    14、@using
+        命名空间
+    
+---
+
+>##  Razor 组件 (.razor)特殊语法
+
+--
+
+    1、@code
+    2、@layout
+        @layout 指令为具有 @page 指令的可路由 Razor 组件指定布局。
+    3、@rendermode
+    4、@typeparam
+        泛型组件
+    5、@bind
+        绑定数据
+    6、@on{EVENT}
+        事件
+    7、@on{EVENT}:preventDefault
+        禁止事件的默认操作。
+    8、@on{EVENT}:stopPropagation
+        停止事件的事件传播。
+    9、@key
+        @key 指令属性使组件比较算法保证基于键的值保留元素或组件。
+    10、@ref
+        组件引用 (@ref) 提供了一种引用组件实例的方法，以便可以向该实例发出命令
+
+---
+
+
+>## Razor页面
 
 ---
 
