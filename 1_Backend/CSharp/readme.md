@@ -24,14 +24,8 @@
 
 [笔记链接](3、EF.md)
 
-## 4、ASP.NET Core
+## 4、WPF
 
-[阅读文档链接](https://learn.microsoft.com/zh-cn/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-7.0 "ASP.NET Core")
+[阅读文档链接](https://learn.microsoft.com/zh-cn/dotnet/desktop/wpf/overview/?view=netdesktop-9.0 "WPF")
 
-[笔记链接](4、ASPNETCore.md)
-
-## 5、ABP
-
-[阅读文档链接](https://docs.abp.io/zh-Hans/abp/latest/Tutorials/Todo/Index?UI=MVC&DB=EF "ABP")
-
-[笔记链接]()
+[笔记链接](4、WPF.md)
