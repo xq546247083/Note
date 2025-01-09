@@ -274,3 +274,38 @@
         });
         
 ---
+
+>## 分布式缓存
+
+---
+
+    1、redis缓存
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = builder.Configuration.GetConnectionString("MyRedisConStr");
+            options.InstanceName = "SampleInstance";
+        });
+    2、分布式内存缓存。分布式内存缓存不是真正的分布式缓存，只是为了方便以后升级为分布式缓存。
+        builder.Services.AddDistributedMemoryCache();
+
+---
+
+>## 性能优化
+
+---
+
+    1、速率限制中间件
+    2、超时中间件
+        针对每个请求添加超时时间。
+    3、HttpClient尽量重用
+        private static readonly HttpClient _httpClient = new HttpClient();
+        [HttpGet("httpclient2")]
+        public async Task<int> GetHttpClient2(string url)
+        {
+            var result = await _httpClient.GetAsync(url);
+            return (int)result.StatusCode;
+        }
+    4、诊断工具
+        PerfCollect、PerfView
+
+---
