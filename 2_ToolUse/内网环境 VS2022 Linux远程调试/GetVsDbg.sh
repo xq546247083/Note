@@ -451,20 +451,24 @@ download()
     target="$(echo "${__VsDbgVersion}" | tr '.' '-')"
     url="https://vsdebugger-cyg0dxb6czfafzaz.b01.azurefd.net/vsdbg-${target}/${vsdbgCompressedFile}"
 
-    check_internet_connection "$url"
+    # 打印下载路径
+    echo "VS RemoteDebugger DonwLoadUrl:$url"
+    
+    # 注释下载代码
+    # check_internet_connection "$url"
 
-    echo "Downloading ${url}"
-    if hash wget 2>/dev/null; then
-        wget -q "$url" -O "$vsdbgCompressedFile"
-    elif hash curl 2>/dev/null; then
-        curl -s "$url" -o "$vsdbgCompressedFile"
-    fi
+    # echo "Downloading ${url}"
+    # if hash wget 2>/dev/null; then
+    #     wget -q "$url" -O "$vsdbgCompressedFile"
+    # elif hash curl 2>/dev/null; then
+    #     curl -s "$url" -o "$vsdbgCompressedFile"
+    # fi
 
-    if [ $? -ne  0 ]; then
-        echo
-        echo "ERROR: Could not download ${url}"
-        exit 1;
-    fi
+    # if [ $? -ne  0 ]; then
+    #     echo
+    #     echo "ERROR: Could not download ${url}"
+    #     exit 1;
+    # fi
 
     __VsdbgCompressedFile=$vsdbgCompressedFile
 }
