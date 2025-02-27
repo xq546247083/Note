@@ -9,7 +9,11 @@
         2、重启SSH服务
             systemctl restart sshd 或 service sshd restart
            
-    3、安装远程调试包（有VS远程调试包的，可跳过此步骤中的3-5）
+    3、获取GetVsDbg.sh
+
+        https://aka.ms/getvsdbgsh
+
+    4、安装远程调试包（有VS远程调试包的，可跳过此步骤中的3-5）
     
         1、拷贝本Git项目中本目录中的【GetVsDbg.sh】文件到linux服务上的目录【/root/.vs-debugger】
         2、执行命令：cd /root/.vs-debugger/
@@ -22,6 +26,6 @@
         7、执行命令：/bin/sh /root/.vs-debugger/GetVsDbg.sh -v vs2022 -l /root/.vs-debugger/vs2022 -a /remote_debugger
         8、得到消息：Successfully installed vsdbg at '/root/.vs-debugger/vs2022'
 
-    4、远程调试
+    5、远程调试
     
         vs2022远程调试，连接类型选择SSH，添加服务器的信息，用用户名和密码登录。代码类型选择：net core for unix。

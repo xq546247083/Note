@@ -119,6 +119,13 @@ get_dotnet_runtime_id()
             . /etc/os-release
             if [ "$ID" = "alpine" ]; then
                 __RuntimeID=linux-musl-arm64
+            # Check to see if we have dpkg to get the real architecture on debian based linux OS.
+            elif hash dpkg 2>/dev/null; then
+                # Raspbian 32-bit will return aarch64 in 'uname -m', but it can only use the linux-arm debugger
+                if [ "$(dpkg --print-architecture)" = "armhf" ]; then
+                    echo 'Info: Overriding Runtime ID from linux-arm64 to linux-arm'
+                    __RuntimeID=linux-arm
+                fi
             fi
         fi
     fi
@@ -321,19 +328,19 @@ set_vsdbg_version()
     version_string="$(echo "$1" | awk '{print tolower($0)}')"
     case "$version_string" in
         latest)
-            __VsDbgVersion=17.6.10401.3
+            __VsDbgVersion=17.13.20213.2
             ;;
         vs2022)
-            __VsDbgVersion=17.6.10401.3
+            __VsDbgVersion=17.13.20213.2
             ;;
         vs2019)
-            __VsDbgVersion=17.6.10401.3
+            __VsDbgVersion=17.13.20213.2
             ;;
         vsfm-8)
-            __VsDbgVersion=17.6.10401.3
+            __VsDbgVersion=17.13.20213.2
             ;;
         vs2017u5)
-            __VsDbgVersion=17.6.10401.3
+            __VsDbgVersion=17.13.20213.2
             ;;
         vs2017u1)
             __VsDbgVersion="15.1.10630.1"
@@ -442,25 +449,23 @@ download()
     fi
     vsdbgCompressedFile="vsdbg-${__RuntimeID}${vsdbgFileExtension}"
     target="$(echo "${__VsDbgVersion}" | tr '.' '-')"
-    url="https://vsdebugger.azureedge.net/vsdbg-${target}/${vsdbgCompressedFile}"
+    url="https://vsdebugger-cyg0dxb6czfafzaz.b01.azurefd.net/vsdbg-${target}/${vsdbgCompressedFile}"
 
-    echo "VS RemoteDebugger DonwLoadUrl:$url"
-    
-    # check_internet_connection "$url"
+    check_internet_connection "$url"
 
-    # echo "Downloading ${url}"
-    # if hash wget 2>/dev/null; then
-    #     wget -q "$url" -O "$vsdbgCompressedFile"
-    # elif hash curl 2>/dev/null; then
-    #     curl -s "$url" -o "$vsdbgCompressedFile"
-    # fi
+    echo "Downloading ${url}"
+    if hash wget 2>/dev/null; then
+        wget -q "$url" -O "$vsdbgCompressedFile"
+    elif hash curl 2>/dev/null; then
+        curl -s "$url" -o "$vsdbgCompressedFile"
+    fi
 
-    # if [ $? -ne  0 ]; then
-    #     echo
-    #     echo "ERROR: Could not download ${url}"
-    #     exit 1;
-    # fi
-    
+    if [ $? -ne  0 ]; then
+        echo
+        echo "ERROR: Could not download ${url}"
+        exit 1;
+    fi
+
     __VsdbgCompressedFile=$vsdbgCompressedFile
 }
 
