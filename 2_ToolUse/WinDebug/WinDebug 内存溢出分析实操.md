@@ -1,5 +1,12 @@
 # 内存溢出的分析实操
 
+## 在进行运行前，使用gflag设置记录函数调用栈信息,再抓Dump包。具体参考：[本目录文件夹AutoUMDH]
+
+    以管理员权限打开GFlags.exe
+        1、打开Image File选项卡
+        2、填写Image的值为:Demo.exe，点击Tab
+        3、勾选Create user mode stack trace database，点击应用。
+
 ## 加载初始环境
 
     .logopen d:\log.txt
