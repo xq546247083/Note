@@ -28,9 +28,9 @@
         查看地址引用根
     dt ntdll!_DPH_HEAP_ROOT CreateStackTrace 0f2d0360
         查看创建堆栈
-    dds 6efda24c
+    dds 0f2d0360
         查看创建堆栈的完全堆栈
-    dd 0f2d0360
+    db 0f2d0360
         查看地址内容
 
     .logopen d:\log.txt
