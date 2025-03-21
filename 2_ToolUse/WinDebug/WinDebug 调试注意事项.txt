@@ -9,10 +9,11 @@
 .load SOS.dll
 .load clr.dll
 .load mscordacwks.dll
-
+.load mscordbi.dll
 .loadby clr sos
-
 .load wow64exts
+.symfix c:\symbols
+.reload
 
 5、分析CPU占用命令
 !runaway
@@ -26,5 +27,5 @@ kb 堆栈
 kv 包含clr的堆栈
 ~*kv 所有线程包含clr的堆栈
 
-6、其他调试工具
+7、其他调试工具
 debugdiag 2 analysis
