@@ -9,15 +9,15 @@
 
 ## 加载初始环境
 
-    .logopen d:\log.txt
+    .logopen d:\log3.txt
     .sympath srv*C:\symbols*https://msdl.microsoft.com/download/symbols
     !sym noisy
     .cordll -ve -u  -l
-    .load SOS.dll
-    .load clr.dll
-    .load mscordacwks.dll
-    .load mscordbi.dll
-    .loadby clr sos
+    .load D:\Work\Record\出差 2025-03-11 正在进行-Y项目出差\出差获得资料\dmp\nvs1-dll\32\SOS.dll
+    .load D:\Work\Record\出差 2025-03-11 正在进行-Y项目出差\出差获得资料\dmp\nvs1-dll\32\clr.dll
+    .load D:\Work\Record\出差 2025-03-11 正在进行-Y项目出差\出差获得资料\dmp\nvs1-dll\32\mscordacwks.dll
+    .load D:\Work\Record\出差 2025-03-11 正在进行-Y项目出差\出差获得资料\dmp\nvs1-dll\32\mscordbi.dll
+    .loadby sos clr
     .load wow64exts
     .symfix c:\symbols
     .reload

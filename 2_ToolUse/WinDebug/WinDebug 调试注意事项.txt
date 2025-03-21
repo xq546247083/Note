@@ -11,7 +11,7 @@
 .load clr.dll
 .load mscordacwks.dll
 .load mscordbi.dll
-.loadby clr sos
+.loadby sos clr
 .load wow64exts
 .symfix c:\symbols
 .reload
