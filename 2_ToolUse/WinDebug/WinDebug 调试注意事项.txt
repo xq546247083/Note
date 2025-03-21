@@ -3,6 +3,7 @@
 32位任务管理器路径：C:\Windows\SysWOW64\Taskmgr.exe
 3、加载的SOS.dll,clr.dll,mscordacwks.dll的dll版本可以通过.NET Memory Profiler分析出来，一般在程序的运行的电脑上有。
 4、初始化环境命令
+.logopen d:\log.txt
 .sympath srv*C:\symbols*https://msdl.microsoft.com/download/symbols
 !sym noisy
 .cordll -ve -u  -l
