@@ -71,23 +71,22 @@
 ---
 
     1.子类：
-    　　ContentControl是Control的子类，专门用于显示内容的，如常用的Label就是ContentControl的子类
+        ContentControl是Control的子类，专门用于显示内容的，如常用的Label就是ContentControl的子类
     2.属性：
-    ? ? ?Template 是Control类的一个属性；
-    ? ? ?ContentTemplate是ContentControl的一个属性；
+        Template 是Control类的一个属性；
+        ContentTemplate是ContentControl的一个属性；
     3.类型：
-    ? ? ?Control的Template属性是ControlTemplate类型的；
-    ? ? ?ContentControl的ContentTemplate属性是DataTemplate类型的；
+        Control的Template属性是ControlTemplate类型的；
+        ContentControl的ContentTemplate属性是DataTemplate类型的；
     4.用途：
-    ? ? ControlTemplate，顾名思义，是控制控件外观和结构的，一般对于某个控件的类型，如一个Button长什么样子，Buttton里有一个列表，列表左侧显示图片等；
-    ? ? DataTemplate，则是控制一个控件它的数据要如何呈现的，一般对于的是某种数据的类型，(一般是用来修饰其Content属性的)，所以要求为该类型的属性赋值，
-? ? ? ? 如：
-? ? ? ? ? ?Label的Content属性赋值后，可以设置Label的ContentTemplate；
-? ? ? ? ? ?ItemsControl的ItemsSource属性赋值后，可以设置其的ItemTemplate；
-? ? ? ? ? ?HeaderItemsControl的Header属性赋值后，可以设置其的HeaderTemplate；
+        ControlTemplate，顾名思义，是控制控件外观和结构的，一般对于某个控件的类型，如一个Button长什么样子，Buttton里有一个列表，列表左侧显示图片等；DataTemplate，则是控制一个控件它的数据要如何呈现的，一般对于的是某种数据的类型，(一般是用来修饰其Content属性的)，所以要求为该类型的属性赋值。
+        如：
+            Label的Content属性赋值后，可以设置Label的ContentTemplate；
+            ItemsControl的ItemsSource属性赋值后，可以设置其的ItemTemplate；
+            HeaderItemsControl的Header属性赋值后，可以设置其的HeaderTemplate；
     5.WPF模板类的继承关系
-    ? ? 1、FrameworkTemplate?派生出：ControlTemplate(决定控件外观)、ItemsPanelTemplate(决定集合的容器)、DataTemplate(决定数据的呈现方式)
-        2、DateTemplate又派生出?HierarchicalDataTemplate(层次数据模板，一般用于TreeView和Menu)
+        1、FrameworkTemplate派生出：ControlTemplate(决定控件外观)、ItemsPanelTemplate(决定集合的容器)、DataTemplate(决定数据的呈现方式)
+        2、DateTemplate又派生出HierarchicalDataTemplate(层次数据模板，一般用于TreeView和Menu)
 
 ---
 
