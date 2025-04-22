@@ -1,5 +1,15 @@
 # WPF
 
+>## WPF和WinForm的区别
+
+---
+
+    1、WinForm底层依赖于传统的Win32API，特别是User32.dll；而WPF则底层依赖于Direct3D。WinForm所有的控件都用windows handle，比较消耗资源。GDI是在内存中绘图，然后再传入显存，最后显示出来。Windows不允许直接读写显存，DirectX提供了直接利用显存绘图的API，支持硬件加速。
+    2、WPF是数据驱动
+    3、更容易实现复杂的界面，而且在复杂的界面上，图形性能比WinForm强
+
+---
+
 >## WPF
 
 ---
@@ -264,6 +274,6 @@
                 $"triggered by the ConditionalClick routed event raised on {sourceName}.");
         }
     3、依赖属性 附加属性
-        附加属性和定义一般的依赖属性一样没什么区别，只是用RegisterAttached方法代替了Register方法罢了。
+        附加属性是一种特殊的依赖属性。它允许给一个对象添加一个值，而该对象可能对这个值一无所知。附加属性和定义一般的依赖属性一样没什么区别，只是用RegisterAttached方法代替了Register方法罢了。如果要对控件进行扩张属性，但是不修改原控件，就使用附加属性。
 
 ---
