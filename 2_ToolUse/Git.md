@@ -1,6 +1,5 @@
 # Git
 
-
 ---
 # 常用命令
 	1、合并某一个提交的数据：git cherry-pick +提交的id
@@ -25,6 +24,13 @@
 ---
 
 ---
+# 增加git拉取的HTTP缓存
+
+	git config --global http.postBuffer 157286400
+
+---
+
+---
 # 用vpn加速git clone方法
 
 	1、下载安装v2rayu等软件
@@ -40,7 +46,5 @@
 	7、Windows输入以下命令：
 		git config --global http.proxy http://127.0.0.1:10809
 		git config --global https.proxy https://127.0.0.1:10809
-
-
 
 ---
