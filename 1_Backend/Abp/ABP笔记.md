@@ -8,6 +8,37 @@
 
 # 二、个人理解
 
+    1、Get Started（重点）
+        一些关于ABP的单层、多层、分布式项目的总体介绍
+    2、Tutorials
+        怎么建立ABP项目的教程
+    3、Tools（重点）
+        ABP的工具
+            1、ABP CLI 命名创建、修改项目
+            2、ABP Studio 界面创建项目
+            3、ABP Suite 一些代码自动生成的东西
+    4、FrameWork（重点）
+        框架，ABP的核心
+    5、Solution Templates（重点）
+        介绍单层、多层、分布式项目等项目模板继承的功能
+    6、Application Modules（重点）
+        ABP官方提供的一些模块，可以集成到项目中。
+    7、UI Themes
+        UI主题
+    8、Testing
+        单元测试
+    9、Deployment（重点）
+        如何部署，如：如何配置HTTPS证书
+    10、Samples
+        一些用ABP实现的项目
+    11、Books
+        出的一些书
+    12、Release Information
+        一些更新信息
+    13、Others
+        其他信息
+
+
 # 三、基础知识
 
 ---
