@@ -43,6 +43,42 @@
 
 ---
 
+## 1、授权
+
+    1、定义权限
+    2、添加到授权列表
+        继承PermissionDefinitionProvider，实现定义权限
+    3、使用权限
+        1、使用属性授权
+            [Authorize("BookStore_Author_Create")]
+        2、代码中使用权限
+            AuthorizationService.AuthorizeAsync("Author_Management_Create_Books");
+            await AuthorizationService.CheckAsync("Author_Management_Create_Books");
+        3、菜单使用权限
+            context.IsGrantedAsync("BookStore_Author_Create")
+    4、使用权限的常用地方
+        1、接口
+        2、菜单
+        3、特定需要权限才能执行的代码
+        4、asp前端按钮控制
+
+## 2、缓存
+
+    1、分布式缓存
+         private readonly IDistributedCache<BookCacheItem> _cache;
+    2、实体缓存
+        1、在第一次调用中使用存储库从数据库获取实体，然后在后续调用中从缓存中获取实体。
+        2、如果缓存的实体被更新或删除，则自动使缓存实体失效。因此，它将在下一次调用中从数据库中检索并重新缓存。
+
+        // 缓存Product
+        context.Services.AddEntityCache<Product, Guid>();
+        private readonly IEntityCache<Product, Guid> _productCache;
+
+        // 缓存ProductDto
+        context.Services.AddEntityCache<Product, ProductDto, Guid>();
+        private readonly IEntityCache<ProductDto, Guid> _productCache;
+
+
 ## 1、配置
 
     1、通过PreConfigureServices和ConfigureServices为模块配置服务。
@@ -188,24 +224,3 @@
             }
         }
         ABP会自动找到这个类并在对象验证时与 CreateUpdateBookDto 关联.
-
-## 6、授权
-
-    1、定义权限
-    2、添加到授权列表
-        继承PermissionDefinitionProvider，实现定义权限
-    3、使用权限
-        1、使用属性授权
-            [Authorize("BookStore_Author_Create")]
-        2、代码中使用权限
-            AuthorizationService.AuthorizeAsync("Author_Management_Create_Books");
-            await AuthorizationService.CheckAsync("Author_Management_Create_Books");
-        3、菜单使用权限
-            context.IsGrantedAsync("BookStore_Author_Create")
-    4、使用权限的常用地方
-        1、接口
-        2、菜单
-        3、特定需要权限才能执行的代码
-        4、asp前端按钮控制
-
-## 7、缓存
