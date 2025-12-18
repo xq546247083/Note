@@ -16,3 +16,9 @@
         elasticsearch-setup-passwords interactive
     6、访问http://127.0.0.1:9003/
         输入elastic和密码即可访问
+
+# 常用命令
+
+    1、修改密码
+
+        elasticsearch-reset-password --username 用户名 -i
