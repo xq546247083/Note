@@ -38,8 +38,21 @@
     13、Others
         其他信息
 
+# 三、注意点
 
-# 三、基础知识
+    1、 接受取消命令
+        private readonly ICancellationTokenProvider _cancellationTokenProvider;
+    2、IHasConcurrencyStamp
+        乐观并发锁
+    3、字符串加密
+        protected IStringEncryptionService StringEncryptionService { get; }
+    4、移除控制器
+        services.Configure<AbpAspNetCoreMvcOptions>(options =>
+        {
+            options.ControllersToRemove.Add(typeof(AbpLanguagesController));
+        });
+        
+# 四、基础知识
 
 ---
 
