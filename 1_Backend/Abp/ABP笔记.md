@@ -51,6 +51,9 @@
         {
             options.ControllersToRemove.Add(typeof(AbpLanguagesController));
         });
+    5、BackgroundWorker和BackgroundJob可能会没有UnitOfWork，会导致数据库操作失败
+         1、using (var uow = _unitOfWorkManager.Begin())
+         2、[UnitOfWork]
         
 # 四、基础知识
 
