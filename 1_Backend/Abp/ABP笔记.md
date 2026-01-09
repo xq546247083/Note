@@ -54,7 +54,15 @@
     5、BackgroundWorker和BackgroundJob可能会没有UnitOfWork，会导致数据库操作失败
          1、using (var uow = _unitOfWorkManager.Begin())
          2、[UnitOfWork]
-        
+    6、UnitOfWork中CompleteAsync和SaveChangesAsync区别
+        1、SaveChangesAsync是保存变更，但是不会立即提交事务。
+        2、CompleteAsync会执行：
+            1、SaveChangesAsync保存变更
+            2、发布事件，并提交变更
+            3、CommitTransactionsAsync提交事务
+
+
+    
 # 四、基础知识
 
 ---
