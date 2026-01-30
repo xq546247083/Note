@@ -56,10 +56,12 @@
          2、[UnitOfWork]
     6、UnitOfWork中CompleteAsync和SaveChangesAsync区别
         1、SaveChangesAsync是保存变更，但是不会立即提交事务。
+            这样的话，同一个事务内的其他SQL可以查询到变更，其他事务查询不到变更。
         2、CompleteAsync会执行：
             1、SaveChangesAsync保存变更
             2、发布事件，并提交变更
             3、CommitTransactionsAsync提交事务
+            它的问题是：ABP在请求结束后，会自动调用CompleteAsync导致异常，所以这个一般是新开的UnitOfWork调用这个。
 
 
     
