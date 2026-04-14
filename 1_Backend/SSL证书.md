@@ -8,7 +8,7 @@ acme.sh --issue -d invive.cn --standalone --keylength 2048
 
 3、把获取的证书转换为pfx
 openssl pkcs12 -export \
--out /home/aegis//invive.cn.pfx \
+-out /home/aegis/invive.cn.pfx \
 -inkey /root/.acme.sh/invive.cn/invive.cn.key \
 -in /root/.acme.sh/invive.cn/fullchain.cer
 
