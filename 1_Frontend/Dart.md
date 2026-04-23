@@ -3,7 +3,7 @@
     Dart是一个强类型的，面向对象的语言，语法来自c家族，和C#高度重合。Dart主要是采用了隔离区概念，定义的变量都是隔离区变量。主要的技术包括：
         1、泛型
         2、异常try catch
-        3、注解，对应c#的Attribute
+        3、注解，对应C#的Attribute
 
 # 记录
 
@@ -43,7 +43,7 @@ class Logger {
 ```
 
 ```
-和c#元组类似
+和C#元组类似
 var getUser() => ('Alice', 25);
 
 void main() {
