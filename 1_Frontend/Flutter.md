@@ -18,3 +18,19 @@ widget:Text,Button,Container,Padding,Margin,Transform,Image
 布局：Row、Column、Center、Align、Stack、Positioned、Flex、Expanded
 动画：AnimatedOpacity、Animation、AnimationController、Tween、Curve
 http请求：Dio
+
+# 问题
+
+    如果安装了VS2026，会导致无法定位VS2022的CMake，导致启动Windows报错，修改方案为：
+    修改D:\Code\Git\OpenHarmony-SIG\flutter_flutter\packages\flutter_tools\lib\src\windows\visual_studio.dart中的代码为下面的代码：
+
+```
+String? get cmakeGenerator {
+    // From https://cmake.org/cmake/help/v3.22/manual/cmake-generators.7.html#visual-studio-generators
+    return switch (_majorVersion) {
+        18 => 'Visual Studio 17 2022',
+        17 => 'Visual Studio 17 2022',
+        _ => 'Visual Studio 16 2019',
+    };
+}
+```
