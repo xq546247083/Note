@@ -62,7 +62,10 @@
             2、发布事件，并提交变更
             3、CommitTransactionsAsync提交事务
             它的问题是：ABP在请求结束后，会自动调用CompleteAsync导致异常，所以这个一般是新开的UnitOfWork调用这个。
-
+    7、[UnitOfWork]注入事务失败的解决方案：
+        1、方法添加virtual
+        2、方法改为异步方法async
+        https://abp.io/docs/latest/framework/architecture/domain-driven-design/unit-of-work#
 
     
 # 四、基础知识
