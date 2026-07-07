@@ -19,6 +19,16 @@ widget:Text,Button,Container,Padding,Margin,Transform,Image
 动画：AnimatedOpacity、Animation、AnimationController、Tween、Curve
 http请求：Dio
 
+# 状态管理
+
+    ChangeNotifier：官方的状态的“大喇叭”，变更后调用notifyListeners通知其他地方刷新。
+    ListenableBuilder：用来包裹UI，通知UI刷新。
+    Provider：是用来获取ChangeNotifier，同时在UI树上共享ChangeNotifier和自动释放。基于BuildContext。
+    Riverpod：改善Provider的问题，完全重写的。以常量形式，解决了需要上下文的问题。主要还是为了简单获取NotifierProvider。
+        ref.watch代替ListenableBuilder，用来监听变化获取State重建UI
+        ref.read(Provider)用来获取State
+        ref.read(Provider.notifier)用来获取Provider，可以调用Provider的方法
+
 # 问题
 
     如果安装了VS2026，会导致无法定位VS2022的CMake，导致启动Windows报错，修改方案为：
