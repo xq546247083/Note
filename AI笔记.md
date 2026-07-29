@@ -26,5 +26,20 @@
     2、RAG
         Retrieval-Augmented Generation，检索增强生成
     3、智能体开发
+        智能体通常指一种以大语言模型为推理与决策核心，结合记忆、工具调用与环境交互能力，能够进行规划决策并执行动作以达成目标的软件系统。
     4、微调
     5、续训
+
+# 智能体开发
+
+    1、工具调用的实现方式
+        1、Function Call（函数调用，Tools call，工具调用）
+            就是大模型支持 tools中定义function，告诉大模型这个function的作用，大模型根据需求决定是否调用这个function，然后智能体再把结果再次传给大模型。
+        2、MCP
+            MCP（Model Context Protocol，模型上下文协议）是一套标准化的通讯协议，旨在规范AI模型和外部工具、数据源的连接方式。通过MCP协议，AI应用和MCP Server可以建立多对多的双向数据流。过程如下：
+            1、连接MCP服务，请求工具列表并缓存。
+            2、调用请求MCP服务对应的工具，获取调用结果。
+
+            https://mcp.so/
+    2、工作流
+    3、自助决策Agent
