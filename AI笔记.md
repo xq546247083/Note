@@ -1,4 +1,4 @@
-# 笔记
+# 大模型介绍
 
     1、按照模态分类
         1、LLM
@@ -16,3 +16,15 @@
             重排序，相关性打分模型。对知识库检索的数据进行排序。
         4、Classifier
             根据数据特征预测其所属的预定义类别，输出离散的类别标签或概率分布。
+    3、AIGC和AGI
+        AIGC就是用AI生成内容。Artificial Intelligence Generated Content，人工智能生成内容。
+        AGI是通用人工智能，可以自主学习并解决大多数人类可以解决的问题。Artificial General Intelligence，通用人工智能。
+        
+# 工程实现
+
+    1、提示词工程
+    2、RAG
+        Retrieval-Augmented Generation，检索增强生成
+    3、智能体开发
+    4、微调
+    5、续训
