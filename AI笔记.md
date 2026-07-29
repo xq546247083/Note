@@ -84,3 +84,15 @@
         可以用于脱敏等，传入{it}
     5、提示词模版
         就是用来构造提示词的，一般用不上。
+    6、输出解析器
+        用来格式化大模型的输出，先传入格式要求，再格式化输出。
+    7、Runnable与LCEL
+        Runnable：抽象所有的可执行对线为一个基类。包含：提示词、模型调用，解析器调用，工具调用等。
+        LCEL：将多个组件按特定顺序组合起来以便完成复杂任务的一个工作流或管道（Pipeline）。
+            1、RunnableSequence-顺序链
+            2、RunnableBranch-分支链
+            3、RunnableSerializable-串行链
+                把多个链结合起来执行
+            4、RunnableParallel-并行链
+            5、RunnableLambda-函数链
+    8、记忆缓存
