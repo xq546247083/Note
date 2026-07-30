@@ -150,3 +150,47 @@
         由：LLM、Memory、RAG、Tool、MCP等组成。
 
         一个Agent最好只做一件事，可以协调多个Agent做一系列的事。
+        
+# LangGraph
+
+    LangGraph = LangChain + 图编排 + 状态机。
+    基于 LangChain 构建的、面向智能体多轮交互/状态持久化/分支并行执行的图结构工作流框架。和Dify的工作流类似。
+    由以下4点构成：
+        1、State
+            状态
+        2、Nodes
+            节点，工具或者LLM，主要是执行逻辑
+        3、Edges
+            边，定义顺序，也就是Dify的连线
+        4、Graph
+            图,由上面的构成的图
+
+    1、state
+        1、Schema
+            状态的约束，构成三要素：
+                1、state_schema
+                    图的完整内部状态，包含了所有节点可能读写的字段，必须指定，不能为空
+                2、input_schema
+                    定义图接受什么输入，是 state_schema 的子集
+                3、output_schema
+                    定义图返回什么输出，是 state_schema 的子集
+        2、Reducers
+            规约函数，用于决定节点产生的更新如何更新到State。“字段级合并策略”：每个字段都有自己的规约函数。
+            Reducer常用函数有以下几种：
+                1、default：未指定Reducer时使用覆盖更新
+                2、add_messages：用于消息列表追加
+                3、operator.add：将元素追加到现有元素中，支持列表、字符串、数值类型的追加
+                4、operator.mul：用于数值相乘
+                5、自定义Reducer：支持用户自定义合并逻辑
+    2、Node
+        1、节点原则：
+            1、单一职责原则：每个节点应该只负责一项职责，避免功能过于复杂
+            2、无状态设计：节点本身不应该保存状态，所有数据都通过输入状态传递
+            3、幂等性：相同的输入应该产生相同的输出，确保可重试性
+            4、可测试性：节点逻辑应该易于单元测试
+        2、特殊的节点：开始节点、结束节点
+        3、节点缓存Node Caching
+        4、节点错误处理和重试机制
+    3、Edges
+        1、Normal Edges: 普通边
+        2、Conditional Edges: 条件边
