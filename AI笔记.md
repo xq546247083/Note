@@ -142,3 +142,6 @@
         2、主要由2部分构成：
             1、MCP 客户端（MCP Clients）：在主机程序内部，与 MCP 服务器保持 1:1 的连接。
             2、MCP 服务器（MCP Servers）：为 MCP 客户端提供上下文、工具和提示信息。
+        调用和Function Call类似：
+            1、MCP Clients连接MCP服务，请求工具列表并缓存，并把MCP的工具列表传递给LLM。
+            2、LLM根据MCP的工具描述判断需要某个工具，调用请求MCP服务对应的工具，获取调用结果，传递给LLM。
