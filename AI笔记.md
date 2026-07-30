@@ -146,7 +146,7 @@
             1、MCP Clients连接MCP服务，请求工具列表并缓存，并把MCP的工具列表传递给LLM。
             2、LLM根据MCP的工具描述判断需要某个工具，调用请求MCP服务对应的工具，获取调用结果，传递给LLM。
     11、Agent
-        Agent是一个决策引擎，核心是推理+行动（Reason + Act），也就是ReAct模式。
+        Agent是一个决策引擎，核心是推理+行动（Reason + Act），也就是ReAct模式。这个模式也是可以设计的，有很多不同的模式。
         由：LLM、Memory、RAG、Tool、MCP等组成。
 
         一个Agent最好只做一件事，可以协调多个Agent做一系列的事。
