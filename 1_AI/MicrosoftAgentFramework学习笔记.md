@@ -130,4 +130,4 @@
         ProvideAIContextAsync：在大模型开口前，把准备好的记忆喂给大模型。
         StoreAIContextAsync：在大模型回答后，从刚结束的对话中搜集新记忆存起来。
     4、WorkflowBuilder
-        工作流构建器，见Demos-ai agent workflow.cs
+        工作流构建器，见【Demos-ai agent workflow.cs】
