@@ -143,3 +143,41 @@
             定义消息在执行器之间的传递路径。
           3、工作流
             协调整个流程，管理执行器、边及整体执行流。
+
+# MAF架构
+
+  - 1. 核心定位与五大编排模式
+    - 定位：微软统一的 AI 智能体开发框架，专为生产级企业应用设计。
+    - 顺序编排 (Sequential)：多 Agent 按固定先后步骤流水线协同。
+    - 并发编排 (Concurrent)：多 Agent 同时并行处理任务。
+    - 群聊编排 (Group Chat)：多 Agent 在同一个上下文空间里讨论协作。
+    - 转交编排 (Handoff)：主 Agent 完成阶段性子任务后，把控制权完全转交给下一个专业 Agent。
+    - 磁性/主从编排 (Magnetic)：包工头 (Manager Agent) 动态创建修改任务清单并派发子任务。
+  - 2. 企业级生产特性
+    - 可观测性 (Observability)：基于 OpenTelemetry，原生对接 Microsoft Foundry 仪表盘，全程追踪工具调用与推理。
+    - 安全控制 (Security)：集成 Azure AI Foundry 的 RBAC 角色权限控制与内置内容安全过滤。
+    - 持久恢复 (Durability)：支持 Agent 线程与工作流暂停、断点恢复和异常重试，适应长运行任务。
+    - 人工干预 (Control)：支持 Human-In-The-Loop，可强制关键动作需人工审批。
+    - 跨生态兼容 (Interoperability)：云厂商无绑定、模型 Provider 无绑定（OpenAI / Azure / MiniMax 等），原生支持 MCP 和 A2A 协议。
+  - 3. 核心概念与代码抽象
+    - Agent 实体：通过声明 LLM 客户端、System Instructions (指令) 与 Name 构造。可通过 .run() 或 .run_stream() 执行。
+    - Tools (工具)：可在 Agent 初始化时注册，或在单次 .run(tools=[...]) 时按需动态传入。
+    - Session / Thread (会话线程)：处理多轮对话。支持对象序列化 (.serialize()) 与反序列化 (.deserialize_thread()) 实现断点持久化。
+    - Middleware (中间件)：
+      - Function Middleware：在 Agent 调用工具前后拦截（如记录工具参数与结果日志）。
+      - Chat Middleware：在 Agent 与大模型交互前后拦截（如记录发给 LLM 的 Messages 数组）。
+    - Memory (记忆存储)：支持内存线程存储、基于 ChatMessageStore 的持久化消息存储，以及接入 Mem0 的动态上下文记忆。
+  - 4. 工作流组件 (Workflows)
+    - 执行器 (Executors)：工作流的基本处理节点，可以是 AIAgent，也可以是纯 C#/Python 自定义业务逻辑代码。
+    - 边 (Edges)：定义节点间的数据传递路径，包含：
+      - Direct Edge (单向直连边)
+      - Conditional Edge (条件边)
+      - Switch-case Edge (多分支选择边)
+      - Fan-out / Fan-in Edge (扇出并发 / 扇入汇总边)
+    - 事件 (Events)：
+      - WorkflowStartedEvent - 工作流执行开始
+      - WorkflowOutputEvent - 工作流生成输出
+      - WorkflowErrorEvent - 工作流遇到错误
+      - ExecutorInvokeEvent - 执行器开始处理
+      - ExecutorCompleteEvent - 执行器处理完成
+      - RequestInfoEvent - 发出请求
