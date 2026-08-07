@@ -66,3 +66,38 @@
 
     构建一个UriContent发送给AI即可
     var message = new(ChatRole.User, [new TextContent("What do you see in this image?"),new UriContent("https://demo.jpg","image/jpeg")]);
+
+## 后台运行响应
+
+    1、非流式处理后台响应
+        var options = new(){AllowBackgroundResponses = true};
+        var session = await agent.CreateSessionAsync();
+        var response = await agent.RunAsync("Write a very long novel about otters inspace.", session, options);
+        // 获取到就退出
+        while (response.ContinuationToken is not null)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            options.ContinuationToken = response.ContinuationToken;
+
+            // 持续获取结果
+            response = await agent.RunAsync(session, options);
+        }
+    2、流式处理后台响应
+        var options = new(){AllowBackgroundResponses = true};
+        var session = await agent.CreateSessionAsync();
+        AgentResponseUpdate? latestReceivedUpdate = null;
+        await foreach (var update in agent.RunStreamingAsync("Write a very long novel about otters in space.", session, options))
+        {
+            Console.Write(update.Text);
+            latestReceivedUpdate = update;
+            
+            // 模拟中断了获取
+            break;
+        }
+
+        // 从中断的地方恢复，继续获取文本
+        options.ContinuationToken = latestReceivedUpdate?.ContinuationToken;
+        await foreach (var update in agent.RunStreamingAsync(session, options))
+        {
+            Console.Write(update.Text);
+        }
