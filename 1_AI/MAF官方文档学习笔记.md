@@ -11,6 +11,24 @@
             推理服务调用函数工具的请求。
         FunctionResultContent
             函数工具调用的结果
+    2、结构化输出
+        1、在调用时设置 ResponseFormat 属性 AgentRunOptions，ResponseFormat选项有：
+            1、内置 ChatResponseFormat.Text 属性
+                响应将为纯文本。
+            2、具有内置 ChatResponseFormat.Json 属性
+                响应将是一个没有任何特定模式的 JSON 对象。
+            3、自定义 ChatResponseFormatJson 实例
+                响应将是符合特定架构的 JSON 对象
+        2、方案1：直接格式化输出：
+            var runOptions = new(){ResponseFormat = ChatResponseFormat.ForJsonSchema<PersonInfo>()};
+            AgentResponse<PersonInfo> response = await agent.RunAsync<PersonInfo>("Please provide
+    information about John Smith, who is a 35-year-old software engineer.", options: runOptions)
+        3、方案2：先获取，再序列化（如果是流式，是先获取完，再序列化）
+            IAsyncEnumerable<AgentResponseUpdate> updates = agent.RunStreamingAsync("Pleaseprovide information about John Smith, who is a 35-year-old software engineer.");
+            AgentResponse response = await updates.ToAgentResponseAsync()
+            JsonElement result = JsonSerializer.Deserialize<JsonElement>(response.Text)
+    3、
+
 
 ## ChatClientAgent执行逻辑（这是最常用的Client）
 
@@ -44,3 +62,7 @@
     5、聊天客户端层
         使用AsIChatClient，然后new ChatClientAgent()
 
+## 多模态智能体
+
+    构建一个UriContent发送给AI即可
+    var message = new(ChatRole.User, [new TextContent("What do you see in this image?"),new UriContent("https://demo.jpg","image/jpeg")]);
