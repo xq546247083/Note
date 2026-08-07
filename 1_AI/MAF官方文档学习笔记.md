@@ -121,3 +121,32 @@
         });
     3、创建一个搜索函数
         static Task<IEnumerable<TextSearchProvider.TextSearchResult>> SearchAdapter(string query, CancellationToken cancellationToken){}
+
+## 声明式Agent（还有声明式工作流）
+
+    用Yaml/Json来配置一个Agent，代码如下：
+        // 声明一个yarm配置
+        var yamlDefinition =
+            """
+            kind: Prompt
+            name: Assistant
+            description: Helpful assistant
+            instructions: You are a helpful assistant. You answer questions in the language specified by the user. You return your answers in a JSON format.
+            model:
+                options:
+                    temperature: 0.9
+                    topP: 0.95
+            outputSchema:
+                properties:
+                    language:
+                        type: string
+                        required: true
+                        description: The language of the answer.
+                    answer:
+                        type: string
+                        required: true
+                        description: The answer text.
+            """;
+        // 从yarm配置中，创建agent
+        var agentFactory = new ChatClientPromptAgentFactory(chatClient);
+        var agent = await agentFactory.CreateFromYamlAsync(yamlDefinition);
