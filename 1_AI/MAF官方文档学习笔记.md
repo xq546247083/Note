@@ -263,3 +263,73 @@
             2、处理审批请求
         8、传递Skills的脚本错误信息
             FunctionInvokingChatClient、UseFunctionInvocation、IncludeDetailedErrors 
+
+## harness
+
+    1、harness的组成
+        1、函数调用
+            具有可配置迭代限制的自动工具调用循环。
+        2、每次服务调用的历史记录持久化
+            每次单独的模型调用后，聊天记录都会被持久化保存，从而支持故障恢复以及在运行过程中进行检查。
+        3、压缩
+            上下文窗口压缩可防止长时间的工具调用循环溢出上下文窗口。 提供令牌预算（或自定义策略）时生效。
+        4、待办事项提供程序
+            智能体用于跟踪多步骤计划的持久待办事项列表。
+        5、代理模式提供程序
+            计划/执行/自定义模式跟踪，用于构建智能体的工作方式
+        6、文件内存提供程序
+            基于文件的会话内存，用于存储跨轮次持久化的笔记和项目。
+        7、文件访问提供程序
+            限定在工作目录内的读写文件工具。
+        8、工具审批
+            “不再询问”的常设审批规则，加上针对安全、无人值守执行的启发式自动审批。
+        9、OpenTelemetry
+            遵循生成式 AI 语义规范的内置可观测性。
+        10、Web搜索
+            默认情况下添加的托管 Web 搜索工具。
+        11、技能提供程序
+            发现并从文件系统逐步加载代理技能。
+        12、后台代理
+            将并行工作委托给后台子代理。
+        13、Shell 环境
+            Shell 命令执行以及对操作系统/Shell/工作目录的探测。
+        14、Looping
+            循环调用代理，直到满足完成条件。
+    2、创建HarnessAgent
+        // 方案1
+        var agent = new HarnessAgent(chatClient);
+        // 方案2
+        var agent = chatClient.AsHarnessAgent(new HarnessAgentOptions
+        {
+            Name = "research-agent",
+            ChatOptions = new ChatOptions
+            {
+                Instructions = "You are a research assistant focused on academic sources.",
+                Tools = [AIFunctionFactory.Create(GetStockPrice)],
+            },
+        });
+    3、启用压缩
+        new HarnessAgentOptions
+        {
+            MaxContextWindowTokens = 128_000,
+            MaxOutputTokens = 16_384,
+        }
+    4、自定义和禁用功能
+        new HarnessAgentOptions
+        {
+            HarnessInstructions = "Custom operating guidelines here.",
+            DisableTodoProvider = true,      // No todo list
+            DisableAgentModeProvider = true, // No plan/execute modes
+            DisableWebSearch = true,         // No hosted web search tool
+            DisableFileMemory = true,        // No file-based session memory
+        };
+    5、循环直到完成
+        new HarnessAgentOptions
+        {
+            LoopEvaluators = [new CompletionMarkerLoopEvaluator("DONE")],
+        }
+    6、Shell和后台智能体
+    7、规划和执行工作流
+        智能体模式提供程序支持一种两阶段工作风格，与待办事项列表天然契合：
+            1、计划模式 - 交互式。 代理会提出澄清问题、起草待办事项列表和计划，并在完成重大工作之前获得批准。
+            2、执行模式 - 自治。 智能体独立处理待办事项，并随时报告进度。
