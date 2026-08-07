@@ -108,11 +108,11 @@
 ## RAG-TextSearchProvider
 
     Microsoft代理框架支持通过将 AI 上下文提供程序添加到代理，轻松地向代理添加检索增强生成（RAG）功能。
-    
+
     1、配置文本搜索提供者
-    var textSearchOptions = new(){SearchTime = TextSearchProviderOptions.TextSearchBehavior.BeforeAIInvoke,};
+        var textSearchOptions = new(){SearchTime = TextSearchProviderOptions.TextSearchBehavior.BeforeAIInvoke,};
     2、创建一个有文本搜索的AI
-    var agent = azureOpenAIClient
+        var agent = azureOpenAIClient
         .GetChatClient(deploymentName)
         .AsAIAgent(new ChatClientAgentOptions
         {
@@ -120,4 +120,4 @@
             AIContextProviders = [new TextSearchProvider(SearchAdapter, textSearchOptions)]
         });
     3、创建一个搜索函数
-    static Task<IEnumerable<TextSearchProvider.TextSearchResult>> SearchAdapter(string query, CancellationToken cancellationToken){}
+        static Task<IEnumerable<TextSearchProvider.TextSearchResult>> SearchAdapter(string query, CancellationToken cancellationToken){}
