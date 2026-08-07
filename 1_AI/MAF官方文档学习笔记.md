@@ -333,3 +333,51 @@
         智能体模式提供程序支持一种两阶段工作风格，与待办事项列表天然契合：
             1、计划模式 - 交互式。 代理会提出澄清问题、起草待办事项列表和计划，并在完成重大工作之前获得批准。
             2、执行模式 - 自治。 智能体独立处理待办事项，并随时报告进度。
+
+## CodeAct（当前是实验性的，无法使用）
+
+    主要是提供给AI一个代码工具，AI编写代码，然后调用执行代码工具执行代码。主要是用于：将多个工具循环、分组、筛选调用等。
+
+## Tools
+
+    1、工具类型
+        1、函数工具
+            代理可以在对话期间调用的自定义代码
+        2、代码解释器
+            在沙盒环境中执行代码
+        3、文件搜索
+            搜索上传的文件
+        4、Web搜索
+            在 Web 上搜索信息
+        5、托管MCP工具
+            提供程序运行时调用的 MCP 服务器
+        6、本地MCP工具
+            在本地或自定义主机上运行的 MCP 服务器
+        7、Foundry工具箱
+            在 Foundry 项目中管理的托管工具配置的命名版本控制捆绑包
+    2、创建工具
+        AIFunctionFactory.Create(GetWeather)
+    3、工具审批
+        工具审批是一项框架功能，可用于在模型收到结果之前通过人工循环决策来限制工具调用。 它适用于客户端在本地调用工具的提供程序。
+        var weatherFunction = AIFunctionFactory.Create(GetWeather);
+        var approvalRequiredWeatherFunction = new ApprovalRequiredAIFunction(weatherFunction);
+    4、代码解释器
+        传入 new CodeInterpreterToolDefinition() 启用代码解释器
+    5、文件搜索
+        new FileSearchToolDefinition()
+    6、Web搜索
+        new WebSearchToolDefinition()
+    7、Hosted MCP Tools
+        Azure专用的，不用管
+    8、Local MCP Tools
+        // 为github MCP服务创建一个MCP Client
+        await using var mcpClient = await McpClientFactory.CreateAsync(new StdioClientTransport(new()
+        {
+            Name = "MCPServer",
+            Command = "npx",
+            Arguments = ["-y", "--verbose", "@modelcontextprotocol/server-github"],
+        }));
+        // 获取可用的工具列表
+        var mcpTools = await mcpClient.ListToolsAsync().ConfigureAwait(false);
+        // 转换为工具
+        [.. mcpTools.Cast<AITool>()]
