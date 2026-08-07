@@ -216,5 +216,50 @@
                         new AgentMcpSkillsSourceOptions{ArchiveSkillsDirectory = Path.Combine(AppContext.BaseDirectory, "extracted-skills"),ArchiveMaxFileCount = 50,ArchiveMaxSizeBytes = 2 * 1024 * 1024,}).Build();
         3、建设者
             AgentSkillsProviderBuilder将多个源组合到单个提供程序中，应用聚合、重复数据删除、缓存和可选筛选。
-       
-    
+    6、技能源的构建
+        1、AgentSkillsProvider 从一个或多个源（实现了 AgentSkillsSource 的对象）中检索技能。 源分为三类：
+            1、发现或持有技能的叶源（如 AgentFileSkillsSource 用于基于文件的技能）
+            2、转换另一个源输出的装饰器（聚合、去重、缓存和筛选）。
+            3、自定义源
+        2、每个源实现单个方法 - GetSkillsAsync(AgentSkillsSourceContext context, CancellationToken cancellationToken = default)
+            1、Agent - 请求技能的 AIAgent 实例。
+            2、Session - 与调用关联的 AgentSession ，如果没有会话，则为 null
+        3、叶源
+            1、AgentFileSkillsSource
+                从磁盘上的 SKILL.md 文件中发现技能。
+            2、AgentInMemorySkillsSource
+                将 AgentSkill 实例（代码定义或基于类）包装在内存中。
+        4、装饰器源
+            1、组合器 AggregatingAgentSkillsSource
+                将多个源合并为一个源。 技能按注册顺序返回，且未应用重复数据删除或筛选。
+            2、修饰器 DeduplicatingAgentSkillsSource
+                修饰器包装内部源并转换其输出。 可以将它们串联起来以构建一个管道。移除重复的技能名称（不区分大小写，保留首次出现的名称）。
+            3、缓存器 CachingAgentSkillsSource
+                缓存内部源返回的技能列表。 并发调用方按缓存密钥进行序列化，因此每次只运行一个提取。
+            4、筛选器 FilteringAgentSkillsSource
+                使用谓词以决定包含还是排除技能。
+        5、自定义源
+            当内置源无法满足你的场景时，请实现你自己的源。 
+                1、对于叶源（从新来源 [如数据库或远程服务]生成技能的源），请子类化 AgentSkillsSource
+                2、对于转换另一个源输出的装饰器，请子类化DelegatingAgentSkillsSource
+        6、构建AgentSkillsProvider的3种方案
+            1、AgentSkillsProviderBuilder
+                使用自动聚合、重复数据删除、缓存和可选筛选将多个技能类型组合到一个提供程序中。 最适合结合基于文件、代码定义、类和 MCP 的技能的场景。
+                通过串联 UseFileSkill 、 UseSkill 、 UseMcpSkills 和 UseFileScriptRunne、UseFilter的构建。
+            2、直接源组合
+                使用公共 AgentSkillsSource 类自行构造源管道。
+                var fileSource = new AgentFileSkillsSource([Path.Combine(AppContext.BaseDirectory, "skills")],SubprocessScriptRunner.RunAsync);
+                var inMemorySource = new AgentInMemorySkillsSource([volumeConverterSkill, temperatureConverter]);
+                var aggregated = new AggregatingAgentSkillsSource([fileSource, inMemorySource]);
+                var deduplicated = new DeduplicatingAgentSkillsSource(aggregated);
+                var cached = new CachingAgentSkillsSource(deduplicated);
+                var skillsProvider = new AgentSkillsProvider(cached,options: new AgentSkillsProviderOptions(),ownsSource: true);
+            3、构造函数
+                直接从文件路径或技能实例创建提供程序。 自动应用重复数据删除和缓存。最适用于单一源场景。
+                var skillsProvider = new AgentSkillsProvider(Path.Combine(AppContext.BaseDirectory, "skills"),scriptRunner: SubprocessScriptRunner.RunAsync);
+        7、工具审批与处理审批请求
+            1、工具的使用，一般需要暂停，并返回一个审批：ToolApprovalRequestContent
+                UseToolApproval可以配置工具审批规则
+            2、处理审批请求
+        8、传递Skills的脚本错误信息
+            FunctionInvokingChatClient、UseFunctionInvocation、IncludeDetailedErrors 
