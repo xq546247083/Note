@@ -31,7 +31,8 @@
             在把请求发给 AI 之前/之后，框架自动去拿数据（如聊天历史、知识库/RAG），默默地加到 Prompt 里。AI 本身感知不到过程，只看结果。
         2、Tools
             把能力包装成函数交给 AI，由 AI 自己决定“我要不要用”、“什么时候用”、“用什么参数去用”。
-
+    4、Observability、Evaluation
+        可观测性、评估
 
 ## ChatClientAgent执行逻辑（这是最常用的Client）
 
@@ -150,3 +151,70 @@
         // 从yarm配置中，创建agent
         var agentFactory = new ChatClientPromptAgentFactory(chatClient);
         var agent = await agentFactory.CreateFromYamlAsync(yamlDefinition);
+
+## Skills
+
+    1、Skills是指令、脚本和资源的可移植包，可提供代理的专用功能和域专业知识。 技能遵循开放规范并实现渐进式披露模式，以便代理在需要时仅加载所需的上下文。在需要时使用代理技能：
+        1、封装领域专业知识
+            将专业知识（费用政策、法律工作流、数据分析管道）封装为可复用、可移植的软件包。
+        2、扩展代理功能
+            为代理提供新功能，而无需更改其核心指令。
+        3、确保一致性
+            将多步骤任务转换为可重复的可审核工作流。
+        4、启用互操作性
+            在不同的代理技能兼容产品中重复使用相同的技能
+    2、Skills结构
+        skills是一个目录，包含一个 SKILL.md 文件，并且可以选择包括用于存放资源的子目录：
+        expense-report/
+        ├── SKILL.md                          # 必填 - 元数据 + 指引提示词
+        ├── scripts/
+        │   └── validate.py                   # 可执行代码
+        ├── references/
+        │   └── POLICY_FAQ.md                 # 参考文档 — Agent 会在需要时按需加载
+        └── assets/
+            └── expense-report-template.md    # 模板与静态资源
+    3、SKILL.md格式
+        SKILL.md 文件必须包含 YAML 前置元数据，后跟 Markdown 内容：
+        ---
+        name: expense-report
+        description: File and validate employee expense reports according to company policy. Use when asked about expense submissions, reimbursement rules, or spending limits.
+        license: Apache-2.0
+        compatibility: Requires python3
+        metadata:
+            author: contoso-finance
+            version: "2.1"
+        ---
+    4、渐进式披露
+        代理技能使用四阶段渐进式披露模式来最大程度地减少上下文使用情况：
+            1、宣告
+                在每次运行开始时，技能名称和描述会被注入到系统提示中，让代理知道有哪些可用技能。
+            2、加载
+                当任务与技能的域匹配时，代理会调用 load_skill 该工具以检索完整的 SKILL.md 正文，其中包含详细说明。
+            3、读取资源
+                代理仅在需要时调用 read_skill_resource 该工具以提取补充文件（引用、模板、资产）。
+            4、运行脚本
+                代理仅在需要时调用该工具 run_skill_script 以执行与技能捆绑的脚本。
+    5、技能的组成部分
+        1、供应商
+            AgentSkillsProvider是向代理公开技能的上下文提供程序。它播发系统提示中的可用技能，并注册代理用于加载技能、读取资源和运行脚本的工具。
+        2、源
+            源向提供程序提供技能。 技能可能来自多种源类型：
+                1、基于文件的技能 - 从 SKILL.md 文件系统目录中的文件发现的技能。
+                    var skillsProvider = new AgentSkillsProvider(Path.Combine(AppContext.BaseDirectory, "skills"));
+                2、代码定义的技能 - 使用 AgentInlineSkill在代码中以内联方式定义的技能。用于代码控制技能内容，动态生成技能。
+                    var codeStyleSkill = new AgentInlineSkill();
+                3、基于类的技能 — 封装于派生自 AgentClassSkill<T>的类中的技能。
+                    public class UnitConverterSkill : AgentClassSkill<UnitConverterSkill>
+                    var skillsProvider = new AgentSkillsProvider(new UnitConverterSkill());
+                4、基于MCP的技能 - 通过UseMcpSkills从MCP（模型上下文协议）服务器发现的技能。
+                    await using McpClient client = await McpClient.CreateAsync(new StdioClientTransport(new(){Name = "skills-server",Command = "dotnet",Arguments = [skillsServerPath, "--server"],}));
+                    基于 MCP 的技能支持两种索引条目类型：
+                    1、skill-md - 技能的 SKILL.md 及其同级资源按需从 MCP 服务器获取
+                        var skillsProvider = new AgentSkillsProviderBuilder().UseMcpSkills(client).Build();
+                    2、Archive - 技能作为一个打包存档（ZIP、TAR 或 gzip 压缩的 TAR）分发，该存档在本地下载和解压缩
+                        var skillsProvider = new AgentSkillsProviderBuilder().UseMcpSkills(client, 
+                        new AgentMcpSkillsSourceOptions{ArchiveSkillsDirectory = Path.Combine(AppContext.BaseDirectory, "extracted-skills"),ArchiveMaxFileCount = 50,ArchiveMaxSizeBytes = 2 * 1024 * 1024,}).Build();
+        3、建设者
+            AgentSkillsProviderBuilder将多个源组合到单个提供程序中，应用聚合、重复数据删除、缓存和可选筛选。
+       
+    
