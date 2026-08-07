@@ -127,8 +127,8 @@
         创建一个会话，里面会自动管理对话上下文
     3、AIContextProvider
         AI的上下文提供者，记忆组件，一般是基于向量数据库实现，实现RAG。其中：
-        ProvideAIContextAsync：在大模型开口前，把准备好的记忆喂给大模型。
-        StoreAIContextAsync：在大模型回答后，从刚结束的对话中搜集新记忆存起来。
+        ProvideAIContextAsync方法：在大模型开口前，把准备好的记忆喂给大模型。
+        StoreAIContextAsync方法：在大模型回答后，从刚结束的对话中搜集新记忆存起来。
     4、WorkflowBuilder
         工作流构建器，见【Demos-workflow.cs】
         也可以用于Agent，见【Demos-agent workflow.cs】
