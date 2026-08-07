@@ -381,3 +381,68 @@
         var mcpTools = await mcpClient.ListToolsAsync().ConfigureAwait(false);
         // 转换为工具
         [.. mcpTools.Cast<AITool>()]
+
+## 会话和记忆
+
+    1、主要使用方案：
+        1、创建会话 （ CreateSessionAsync() ）
+        2、将该会话传递给每个 RunAsync(...)
+        3、从序列化状态重新水化 ( DeserializeSessionAsync(...) )
+        4、使用服务对话 ID 继续 ( myChatClientAgent.CreateSessionAsync("existing-id") )
+        // 创建一个会话
+        AgentSession session = await agent.CreateSessionAsync();
+        var first = await agent.RunAsync("My name is Alice.", session);
+        var second = await agent.RunAsync("What is my name?", session);
+
+        // 持久化并恢复会话
+        var serialized = agent.SerializeSession(session);
+        AgentSession resumed = await agent.DeserializeSessionAsync(serialized);
+    2、AgentSession
+        1、正常方式
+            AgentSession session = await agent.CreateSessionAsync();
+        2、从现有服务会话 ID 创建会话，从现有会话 ID 创建新会话因代理类型而异：
+            1、使用 ChatClientAgent 时
+                AgentSession session = await chatClientAgent.CreateSessionAsync(conversationId);
+            2、使用 A2AAgent 时
+                AgentSession session = await a2aAgent.CreateSessionAsync(contextId, taskId);
+        3、序列化和还原
+            var serialized = agent.SerializeSession(session);
+            var resumed = await agent.DeserializeSessionAsync(serialized);
+    3、上下文提供者 AIContextProviders
+        上下文提供程序围绕每个调用运行，在执行前添加上下文，并在执行后处理数据。
+        1、简单AIContextProvider实现：
+            1、AIContextProvider.ProvideAIContextAsync - 加载相关数据并返回其他说明、消息或工具。
+            2、AIContextProvider.StoreAIContextAsync - 从新消息和存储中提取任何相关数据。
+        2、高级AIContextProvider实现：
+            1、AIContextProvider.InvokingCoreAsync - 在代理调用 LLM 之前调用，并允许修改请求消息列表、工具和说明。
+            2、AIContextProvider.InvokedCoreAsync - 在代理调用 LLM 后调用，并允许访问所有请求和响应消息。
+    4、会话存储 ChatHistoryProvider
+        存储控制会话历史记录的存储位置、加载会话历史记录的数量，以及会话恢复的可靠性。
+        1、内置存储模式支持两种常规存储模式：
+            1、本地会话状态
+                存放在你的应用内存或AgentSession.state 中
+            2、服务托管存储
+                存放在大模型服务端（如 OpenAI/Azure 云端）
+        2、内存中聊天历史记录存储
+            当提供程序不需要服务器端聊天历史记录时，Agent Framework 会在会话中本地保留历史记录，并在每次运行时发送相关消息。
+            var provider = agent.GetService<InMemoryChatHistoryProvider>();
+            var messages = provider?.GetMessages(session);
+            限制历史纪录大小：
+            var chatHistoryProvider = new InMemoryChatHistoryProvider(new InMemoryChatHistoryProviderOptions
+            {
+                ChatReducer = new MessageCountingChatReducer(20)
+            })
+        4、服务托管存储
+            当服务管理会话历史记录时，会话将存储远程聊天标识符。获取会话ID：
+            ChatClientAgentSession typedSession = (ChatClientAgentSession)session;
+            Console.WriteLine(typedSession.ConversationId);
+        5、第三方/自定义存储模式
+            1、简单 ChatHistoryProvider 实现:
+                1、ChatHistoryProvider.ProvideChatHistoryAsync - 加载相关的聊天历史记录并返回加载的消息。
+                2、ChatHistoryProvider.StoreChatHistoryAsync - 存储请求和响应消息，所有这些消息都应是新的。
+            2、高级 ChatHistoryProvider 实现：
+                1、ChatHistoryProvider.InvokingCoreAsync - 在代理调用 LLM 之前调用，并允许修改请求消息列表。
+                2、ChatHistoryProvider.InvokedCoreAsync - 在代理调用 LLM 后调用，并允许访问所有请求和响应消息。
+        6、在重启后保持会话持续
+            JsonElement serialized = agent.SerializeSession(session);
+            AgentSession resumed = await agent.DeserializeSessionAsync(serialized);
