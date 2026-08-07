@@ -446,3 +446,5 @@
         6、在重启后保持会话持续
             JsonElement serialized = agent.SerializeSession(session);
             AgentSession resumed = await agent.DeserializeSessionAsync(serialized);
+    5、压缩（只有内存中聊天历史记录存储可用）
+        用来压缩ChatHistory
