@@ -448,3 +448,93 @@
             AgentSession resumed = await agent.DeserializeSessionAsync(serialized);
     5、压缩（只有内存中聊天历史记录存储可用）
         用来压缩ChatHistory
+
+## Agent中间件
+
+    1、Agent中间件提供了一种在执行的各个阶段截获、修改和增强代理交互的强大方法。 可以使用中间件实现交叉问题，例如日志记录、安全验证、错误处理和结果转换，而无需修改核心代理或函数逻辑。
+    2、所有类型的中间件都通过函数回调实现，当注册同一类型的多个中间件实例时，它们会形成一个链，其中每个中间件实例应通过提供的 next Func 链调用下一个中间件实例。
+    3、三种不同类型的中间件自定义代理框架：
+        1、代理运行中间件
+            允许截获所有Agent运行，以便根据需要检查和/或修改输入和输出。
+            async Task<AgentResponse> CustomAgentRunMiddleware(
+                IEnumerable<ChatMessage> messages,
+                AgentSession? session,
+                AgentRunOptions? options,
+                AIAgent innerAgent,
+                CancellationToken cancellationToken)
+            {
+                Console.WriteLine(messages.Count());
+                var response = await innerAgent.RunAsync(messages, session, options, cancellationToken).ConfigureAwait(false);
+                Console.WriteLine(response.Messages.Count);
+                return response;
+            }
+
+            async IAsyncEnumerable<AgentResponseUpdate> CustomAgentRunStreamingMiddleware(
+                IEnumerable<ChatMessage> messages,
+                AgentSession? session,
+                AgentRunOptions? options,
+                AIAgent innerAgent,
+                [EnumeratorCancellation] CancellationToken cancellationToken)
+            {
+                Console.WriteLine(messages.Count());
+                List<AgentResponseUpdate> updates = [];
+                await foreach (var update in innerAgent.RunStreamingAsync(messages, session, options, cancellationToken))
+                {
+                    updates.Add(update);
+                    yield return update;
+                }
+
+                Console.WriteLine(updates.ToAgentResponse().Messages.Count);
+            }
+        2、函数调用中间件
+            允许截获代理执行的所有Function Tool调用，以便根据需要检查和修改输入和输出。
+            async ValueTask<object?> CustomFunctionCallingMiddleware(
+                AIAgent agent,
+                FunctionInvocationContext context,
+                Func<FunctionInvocationContext, CancellationToken, ValueTask<object?>> next,
+                CancellationToken cancellationToken)
+            {
+                Console.WriteLine($"Function Name: {context!.Function.Name}");
+                var result = await next(context, cancellationToken);
+                Console.WriteLine($"Function Call Result: {result}");
+
+                return result;
+            }    
+        3、IChatClient 中间件
+            允许截获对 IChatClient 实现的调用，其中代理用于 IChatClient 推理调用，例如，使用 ChatClientAgent 时。
+            async Task<ChatResponse> CustomChatClientMiddleware(
+                IEnumerable<ChatMessage> messages,
+                ChatOptions? options,
+                IChatClient innerChatClient,
+                CancellationToken cancellationToken)
+            {
+                Console.WriteLine(messages.Count());
+                var response = await innerChatClient.GetResponseAsync(messages, options, cancellationToken);
+                Console.WriteLine(response.Messages.Count);
+
+                return response;
+            }
+    4、使用中间件
+        var middlewareEnabledAgent = originalAgent.AsBuilder()
+        .Use(runFunc: CustomAgentRunMiddleware, runStreamingFunc: CustomAgentRunStreamingMiddleware)
+        .Use(CustomFunctionCallingMiddleware)
+        .Use(getResponseFunc: CustomChatClientMiddleware, getStreamingResponseFunc: null).Build();
+    5、聊天中间件
+        聊天级中间件允许截获和修改对基础聊天客户端实现的调用。用clientFactory注册IChatClient中间件。
+        clientFactory: (chatClient) => chatClient.AsBuilder().Use(getResponseFunc: LoggingChatMiddleware, getStreamingResponseFunc: null).Build());
+    6、终止和护栏
+        中间件可用于实现保护措施，控制代理何时应停止处理、强制实施内容策略或限制会话长度。
+    7、结果替代
+        结果替代中间件允许在代理返回到调用方之前截获和修改代理的输出。 这对于内容转换、响应扩充或完全替换代理输出非常有用。
+    8、异常处理
+        中间件提供了实现错误处理、重试逻辑和代理交互正常降级的自然位置。
+    9、运行时上下文
+        运行时上下文提供中间件对有关当前执行环境和请求的信息的访问权限。这可实现基于运行时条件的模式，例如按会话配置、特定于用户的行为和动态中间件行为。运行时上下文流经三个主要方面：
+            1、AgentRunOptions.AdditionalProperties
+                对于中间件和工具可以读取的按运行键值元数据。将每运行元数据传递到中间件或工具。
+            2、FunctionInvocationContext
+                用于检查和修改函数调用中间件内的工具调用参数。检查或修改中间件中的工具调用参数。
+            3、AgentSession.StateBag
+                用于在会话中持续运行的共享状态。跨运行共享聊天状态或数据。
+
+## 提供者
