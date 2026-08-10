@@ -543,3 +543,123 @@
         一般的大模型服务商都支持这个。
     2、A2A代理
         这使 A2AAgent 应用程序能够连接到通过 代理到代理 （A2A） 协议 公开的远程代理。 它将任何符合 A2A 的终结点包装为标准 AIAgent ，因此可以使用熟悉的方法（例如 RunAsync ，并与RunStreamingAsync 远程代理交互），而不考虑它们使用哪种框架或技术。
+
+# WorkFlows
+
+    1、执行器
+        执行程序是处理工作流中消息的基本构建基块。 它们是接收类型化消息、执行作并可以生成输出消息或事件的自治处理单元。
+
+        using Microsoft.Agents.AI.Workflows;
+        internal sealed partial class UppercaseExecutor() : Executor("UppercaseExecutor")
+        {
+            [MessageHandler]
+            private ValueTask<string> HandleAsync(string message, IWorkflowContext context)
+            {
+                string result = message.ToUpperInvariant();
+
+                // 主动发给接收的节点列表，可以多次流式发送
+                await context.SendMessageAsync(result); 
+
+                // 返回值，自动发给接收的节点列表
+                return ValueTask.FromResult(result); 
+
+                // 生成返回给调用方或流式传输到调用方的工作流输出
+                // 直接传递到工作流外。
+                await context.YieldOutputAsync("Hello, World!");
+            }
+
+            // 处理多个输入类型
+            [MessageHandler]
+            private ValueTask<int> HandleIntAsync(int message, IWorkflowContext context)
+            {
+                return ValueTask.FromResult(message * 2);
+            }
+        }
+    2、边缘
+        边缘定义工作流中的[执行器]之间的消息流动方式。它们表示工作流图中的连接并确定数据流路径。边缘可以包括用于根据消息内容控制路由的条件。
+        1、边类型
+            1、线性
+                简单的一对一连接
+                builder.AddEdge(sourceExecutor, targetExecutor);
+            2、条件
+                具有确定消息流时间的条件的边缘 
+            3、switch-case
+                根据条件路由到不同的执行程序
+            4、并行
+                一个执行程序向多个目标发送消息 
+            5、扇入
+                多个执行程序发送到一个目标
+                builder.AddFanInBarrierEdge(sources: [ worker1, worker2, worker3 ], target: aggregatorExecutor);
+    3、事件
+        工作流事件系统提供工作流执行的可观测性。 事件在执行过程中在关键点发出，可以通过流式处理实时使用。
+        1、内置工作流类型：
+            // Workflow lifecycle events
+            WorkflowStartedEvent     // Workflow execution begins
+            WorkflowOutputEvent      // Workflow outputs data
+            WorkflowErrorEvent       // Workflow encounters an error
+            WorkflowWarningEvent     // Workflow encountered a warning
+
+            // Executor events
+            ExecutorInvokedEvent     // Executor starts processing
+            ExecutorCompletedEvent   // Executor finishes processing
+            ExecutorFailedEvent      // Executor encounters an error
+            AgentResponseEvent       // An agent run produces output
+            AgentResponseUpdateEvent // An agent run produces a streaming update
+
+            // Superstep events
+            SuperStepStartedEvent    // Superstep begins
+            SuperStepCompletedEvent  // Superstep completes
+
+            // Request events
+            RequestInfoEvent         // A request is issued
+        2、自定义事件
+            1、定义事件
+                internal sealed class ProgressEvent(string step) : WorkflowEvent(step) { }
+            2、触发事件
+                [MessageHandler]
+                private async ValueTask HandleAsync(string message, IWorkflowContext context)
+                {
+                    await context.AddEventAsync(new ProgressEvent("Validating input"));
+                }
+            3、接收事件
+                await foreach (WorkflowEvent evt in run.WatchStreamAsync())
+                {
+                    switch (evt)
+                    {
+                        case ProgressEvent progress:
+                            Console.WriteLine($"Progress: {progress.Data}");
+                            break;
+                    }
+                }
+    4、工作流生成和执行
+        工作流将执行器和边缘关联到定向图中，并管理执行。它协调执行程序调用、消息路由和事件流式处理。使用WorkflowBuilder来构建。
+        1、创建工作流
+            WorkflowBuilder builder = new(processor); // Set starting executor
+            builder.AddEdge(processor, validator);
+            builder.AddEdge(validator, formatter);
+            var workflow = builder.Build();
+        2、执行工作流
+            // 流式执行
+            StreamingRun run = await InProcessExecution.RunStreamingAsync(workflow, inputMessage);
+            await foreach (WorkflowEvent evt in run.WatchStreamAsync())
+            {
+                if (evt is ExecutorCompletedEvent executorComplete)
+                {
+                    Console.WriteLine($"{executorComplete.ExecutorId}: {executorComplete.Data}");
+                }
+
+                if (evt is WorkflowOutputEvent outputEvt)
+                {
+                    Console.WriteLine($"Workflow completed: {outputEvt.Data}");
+                }
+            }
+
+            // 非流式执行
+            Run result = await InProcessExecution.RunAsync(workflow, inputMessage);
+            foreach (WorkflowEvent evt in result.NewEvents)
+            {
+                if (evt is WorkflowOutputEvent outputEvt)
+                {
+                    Console.WriteLine($"Final result: {outputEvt.Data}");
+                }
+            }
