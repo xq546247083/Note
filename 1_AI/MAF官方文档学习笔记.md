@@ -806,3 +806,50 @@
 ## 可视化
 
     workflow.ToMermaidString()
+
+
+## 多Agent编排
+
+    内置的模式：
+    1、顺序
+        var workflow = AgentWorkflowBuilder.BuildSequential(translationAgents);
+    2、并发
+        var workflow = AgentWorkflowBuilder.BuildConcurrent(translationAgents);
+    3、Handoff
+        代理根据上下文相互传输控制。在内部，切换协调是通过网状拓扑结构实现的，其中代理直接连接，无需协调器。 每个代理都可以根据预定义的规则或消息的内容决定何时交出对话。
+        var workflow = AgentWorkflowBuilder.CreateHandoffBuilderWith(triageAgent)
+        .WithHandoffs(triageAgent, [mathTutor, historyTutor]) // Triage can route to either specialist
+        .WithHandoffs([mathTutor, historyTutor], triageAgent) // Both specialists can return to triage
+        .Build();
+    4、Group Chat
+        Agent在共享对话中协作
+        在内部，群组聊天业务流程按星形拓扑汇编智能体，中间是一个业务流程协调程序。 协调器可以实施各种策略来选择下一个代理，例如轮循机制、基于提示的选择或基于聊天上下文的自定义逻辑，使其成为多代理协作的灵活且强大的模式。
+        var workflow = AgentWorkflowBuilder
+        .CreateGroupChatBuilderWith(agents =>
+            new RoundRobinGroupChatManager(agents)
+            {
+                MaximumIterationCount = 5  // Maximum number of turns
+            })
+        .AddParticipants(writer, reviewer)
+        .Build();
+    5、Magentic
+        Agent动态协调
+        在此模式中，Magentic 管理器协调一个专门代理团队，并根据不断变化的上下文、任务进度和代理能力选择哪个代理应在接下来的步骤中采取行动。磁性编排的体系结构与群聊编排模式相同，拥有一个非常强大的管理器，它通过计划来协调代理之间的协作。 如果你的方案需要更简单的协调而不进行复杂的规划，请考虑改用群聊模式。
+        var workflow = new MagenticWorkflowBuilder(managerAgent)
+        .AddParticipants([researcherAgent, coderAgent])
+        .WithName("Magentic Orchestration Workflow")
+        .WithDescription("Coordinates a researcher and coder to solve a complex analytical task.")
+        .RequirePlanSignoff(false)
+        .WithMaxRounds(10)
+        .WithMaxStalls(3)
+        .WithMaxResets(2)
+        .Build();
+
+## 代理执行程序
+
+    将 AI 代理添加到工作流时，需要将其包装在执行器中，以便工作流引擎可以将消息路由到工作流、管理其会话状态以及处理其输出。 代理执行程序是处理此适应的内置执行程序。
+    Agent作为工作流的执行器，都会被这个：AIAgentHostExecutor包裹，代理执行。
+
+## 子工作流
+
+    把工作流转换为执行器，然后就可以添加到父工作流中。workflow.BindAsExecutor()
