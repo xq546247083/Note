@@ -106,7 +106,7 @@ async Task<string> RunAgentAsync(string input, CancellationToken cancellationTok
 }
 ```
 
-    2、长任务
+    2、后台响应
 
 ``` Csharp
 
@@ -270,3 +270,42 @@ public class UpperCaseParrotAgent : AIAgent
 {
 }
 ```
+
+## Agents
+
+    1、使用工具提示
+        ToolApprovalRequestContent
+    2、结构化输出
+        ResponseFormat
+    3、持久化会话
+        var serializedSession = await agent.SerializeSessionAsync(session);
+        var str=JsonSerializer.Serialize(serializedSession, new JsonSerializerOptions { WriteIndented = true }) + "\n"
+    4、聊天记录存储
+        ChatHistoryProvider
+        // 裁剪历史记录
+        ChatHistoryProvider = new InMemoryChatHistoryProvider(new() { ChatReducer = new MessageCountingChatReducer(2) })
+    5、可观测性
+        .UseOpenTelemetry(sourceName: sourceName)
+    6、服务依赖注入
+        builder.Services.AddSingleton(agent);
+    7、服务添加MCP服务
+        var tool = McpServerTool.Create(agent.AsAIFunction());
+        var builder = Host.CreateEmptyApplicationBuilder(settings: null);
+        builder.Services.AddMcpServer().WithStdioServerTransport().WithTools([tool]);
+    8、多模态输入-图片
+        var message = new(ChatRole.User, [
+            new TextContent("你在这张图片里看到了什么？"),
+            // 传入图片数据（异步从本地文件 Assets/walkway.jpg 加载）
+            await DataContent.LoadFromAsync("Assets/walkway.jpg"),
+        ]);
+    9、Agent转换为工具
+        weatherAgent.AsAIFunction()
+    10、添加中间件
+        .Use(FunctionCallMiddleware)
+    11、后台响应
+        var options = new() { AllowBackgroundResponses = true };
+    12、YAML定义
+    13、Shell执行
+        LocalShellExecutor
+    14、Todo任务列表
+        TodoProvider
