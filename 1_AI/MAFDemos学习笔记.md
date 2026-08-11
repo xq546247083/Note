@@ -309,3 +309,70 @@ public class UpperCaseParrotAgent : AIAgent
         LocalShellExecutor
     14、Todo任务列表
         TodoProvider
+
+## AgentSkills
+
+    1、基于MCP的Skills
+
+``` Csharp
+await using McpClient client = await McpClient.CreateAsync(
+    new StdioClientTransport(new()
+    {
+        Name = "skills-server",
+        Command = "dotnet",
+    }));
+
+var skillsProvider = new AgentSkillsProviderBuilder()
+    .UseMcpSkills(client)
+    .Build();
+```
+
+    2、基于文件的Skills
+
+``` Csharp
+// 创建基于文件的Skills提供者
+var skillsProvider = new AgentSkillsProvider(Path.Combine(AppContext.BaseDirectory, "skills"),SubprocessScriptRunner.RunAsync);
+
+// 加载skillsProvider
+var agent = new AIProjectClient(new Uri(endpoint), new DefaultAzureCredential())
+    .AsAIAgent(new ChatClientAgentOptions
+    {
+        Name = "UnitConverterAgent",
+        ChatOptions = new()
+        {
+            ModelId = deploymentName,
+            Instructions = "You are a helpful assistant that can convert units.",
+        },
+        AIContextProviders = [skillsProvider],
+    })
+    .AsBuilder()
+    .UseToolApproval(new ToolApprovalAgentOptions
+    {
+        // 自动审核工具
+        AutoApprovalRules = [AgentSkillsProvider.AllToolsAutoApprovalRule],
+    })
+    .Build();
+
+// 执行
+var response = await agent.RunAsync(
+    "How many kilometers is a marathon (26.2 miles)? And how many pounds is 75 kilograms?");
+```
+    
+    3、基于代码的Skills
+        AgentInlineSkill
+    4、基于类的Skills
+        public class UnitConverterSkill : AgentClassSkill<UnitConverterSkill>{}
+        var unitConverter = new UnitConverterSkill();
+        var skillsProvider = new AgentSkillsProvider(unitConverter);
+    5、混合Skills
+        var skillsProvider = new AgentSkillsProviderBuilder()
+            // 基于文件的Skills
+            .UseFileSkill(Path.Combine(AppContext.BaseDirectory, "skills"))
+            // 基于代码的Skills
+            .UseSkill(volumeConverterSkill)
+            // 基于类的Skills
+            .UseSkill(temperatureConverter)  
+            .UseFileScriptRunner(SubprocessScriptRunner.RunAsync)
+            .Build();
+
+## AgentWithCodeAct
