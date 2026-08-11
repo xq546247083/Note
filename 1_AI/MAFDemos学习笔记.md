@@ -215,7 +215,7 @@ var getConversationItemsResults = conversationClient.GetConversationItems(conver
 // 在 OpenAI 云端删除/销毁这个会话，清理云端数据
 var deleteConversationResult = conversationClient.DeleteConversation(conversationId);
 ```
-    2、接入OpenAI的云端代码编译执行和下载生成的文件
+    3、接入OpenAI的云端代码编译执行和下载生成的文件
 ``` Csharp
 // 挂载 HostedCodeInterpreterTool 赋予 Agent 跑 Python 代码的能力
 var agent = openAIClient
@@ -253,4 +253,20 @@ var fileData = await containerClient.DownloadContainerFileAsync(
 // 保存到本地物理磁盘
 var outputPath = Path.Combine(Directory.GetCurrentDirectory(), safeFilename);
 await File.WriteAllBytesAsync(outputPath, fileData.ToArray());
+```
+
+    4、A2A方式提供Agent
+
+``` Csharp
+var agentCardResolver = new A2ACardResolver(new Uri(a2aAgentHost));
+AIAgent agent = await agentCardResolver.GetAIAgentAsync();
+```
+    5、OpenAI的Chat、Response
+    6、自定义Agent
+
+``` Csharp
+// 继承这个，实现对应的方法即可
+public class UpperCaseParrotAgent : AIAgent
+{
+}
 ```
