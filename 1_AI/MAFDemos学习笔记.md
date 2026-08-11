@@ -1,6 +1,6 @@
 # MAF Demos 学习笔记
 
-## 01-get-started
+# 01-get-started
 
     1、创建Agent，并执行
 
@@ -83,6 +83,85 @@ foreach (WorkflowEvent evt in run.NewEvents)
     if (evt is ExecutorCompletedEvent executorComplete)
     {
         Console.WriteLine($"{executorComplete.ExecutorId}: {executorComplete.Data}");
+    }
+}
+```
+
+# 02-agents
+
+## A2A
+
+    1、Agent转变为工具
+
+``` Csharp
+// 方案1
+agent.AsAIFunction()
+// 方案2
+AIFunctionFactory.Create(RunAgentAsync, options);
+async Task<string> RunAgentAsync(string input, CancellationToken cancellationToken)
+{
+    var response = await a2aAgent.RunAsync(input, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+    return response.Text;
+}
+```
+
+    2、长任务
+
+``` Csharp
+
+// 允许服务器返回一个Task
+var options = new() { AllowBackgroundResponses = true };
+var session = await agent.CreateSessionAsync();
+var response = await agent.RunAsync("some messages", session, options: options);
+
+// 循环直到完成
+while (response.ContinuationToken is { } token)
+{
+    // Wait before polling again.
+    await Task.Delay(TimeSpan.FromSeconds(2));
+
+    // 继续获取回复
+    response = await agent.RunAsync(session, options: new AgentRunOptions { ContinuationToken = token });
+}
+```
+
+    3、选择沟通方式
+
+``` Csharp
+var options = new()
+{
+    PreferredBindings = [ProtocolBindingNames.HttpJson]
+    // PreferredBindings = [ProtocolBindingNames.JsonRpc]
+};
+var agent = agentCard.AsAIAgent(options: options);
+```
+
+    4、重连
+
+``` Csharp
+ResponseContinuationToken? continuationToken = null;
+await foreach (var update in agent.RunStreamingAsync("some messages.", session))
+{
+    // 保存一个token，用于恢复
+    if (update.ContinuationToken is { } token)
+    {
+        continuationToken = token;
+    }
+
+    // Imitating stream interruption
+    break;
+}
+
+// 从恢复token继续获取流
+if (continuationToken is not null)
+{
+    await foreach (var update in agent.RunStreamingAsync(session, options: new() { ContinuationToken = continuationToken }))
+    {
+        if (!string.IsNullOrEmpty(update.Text))
+        {
+            Console.WriteLine(update.Text);
+        }
     }
 }
 ```
