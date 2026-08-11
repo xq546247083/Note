@@ -413,4 +413,15 @@ using var codeAct = new HyperlightCodeActProvider(options);
     using var executeCodeFuncation = new HyperlightExecuteCodeFunction(HyperlightCodeActProviderOptions.CreateForWasm(guestPath));
     tools: [executeCodeFuncation]
 
-## 
+## AgentWithMemory
+
+    1、聊天记录提供者
+        ChatHistoryMemoryProvider
+    2、Mem0
+        一个服务，专门用来记忆聊天记录的服务。Mem0Provider
+    3、Valkey
+        Redis开源的数据库分支，可以用来记忆聊天记录的服务。ValkeyChatHistoryProvider
+    4、文件记忆聊天记录
+        FileMemoryProvider
+
+## AgentWithRAG
