@@ -165,3 +165,92 @@ if (continuationToken is not null)
     }
 }
 ```
+
+## AgentProviders
+
+    1、接入OpenAI
+
+``` Csharp
+// 下面的ResponsesClient可以替换为ChatClient，用来表示对话的
+// 创建Agent方式1
+var agent =
+    new ResponsesClient(new ApiKeyCredential(apiKey))
+    .AsAIAgent(model: model, instructions: "You are good at telling jokes.", name: "Joker");
+// 创建Agent方式2
+var client = new OpenAIClient(apiKey)
+        // 使用Response接口
+        .GetResponsesClient()
+        // 获取ChatClient的聊天方式
+        .AsIChatClient(model).AsBuilder()
+        .ConfigureOptions(o =>
+        {
+            // 开启深度思考，力度中，输出完整结果
+            o.Reasoning = new()
+            {
+                Effort = ReasoningEffort.Medium,
+                Output = ReasoningOutput.Full,
+            };
+        }).Build();
+var agent = new ChatClientAgent(client);
+// 执行
+var response = await agent.RunAsync("Some Messages.");
+// 转换为OpenAI SDK的结果
+// response.AsOpenAIChatCompletion()
+// response.AsOpenAIResponse()
+```
+
+    2、接入OpenAI的云端会话
+
+``` Csharp
+// 创建云端会话客户端
+var conversationClient = openAIClient.GetConversationClient();
+// 向 OpenAI 服务器请求创建一个新会话，拿到云端唯一的 conversationId（如 conv_123abc）
+var createConversationResult = await conversationClient.CreateConversationAsync(...);
+using JsonDocument createConversationResultAsJson = JsonDocument.Parse(createConversationResult.GetRawResponse().Content.ToString());
+var conversationId = createConversationResultAsJson.RootElement.GetProperty("id"u8)!.GetString()!;
+// 根据会话id，创建会话
+var session = await agent.CreateSessionAsync(conversationId);
+// 从 OpenAI 云端拉取该 conversationId 存储的所有历史消息记录
+var getConversationItemsResults = conversationClient.GetConversationItems(conversationId);
+// 在 OpenAI 云端删除/销毁这个会话，清理云端数据
+var deleteConversationResult = conversationClient.DeleteConversation(conversationId);
+```
+    2、接入OpenAI的云端代码编译执行和下载生成的文件
+``` Csharp
+// 挂载 HostedCodeInterpreterTool 赋予 Agent 跑 Python 代码的能力
+var agent = openAIClient
+    .GetResponsesClient()
+    .AsAIAgent(
+        model: model,
+        instructions: "你是一个可以通过写代码生成文件的助手。",
+        name: "CodeInterpreterAgent",
+        // Hosted，在云端执行代码的工具。指定给 AI 服务的托管工具，使它能够执行生成的代码。
+        tools: [new HostedCodeInterpreterTool()]); 
+// 让 Agent 生成 1 到 12 的乘法口诀表 CSV 文件
+AgentResponse response = await agent.RunAsync(
+    "Create a CSV file with the multiplication times tables from 1 to 12. Include headers.");
+// 遍历 Agent 返回消息中的“标注引用 (Annotations)”
+foreach (AIAnnotation annotation in content.Annotations)
+{
+    // 如果找到了代码解释器容器文件引用 (ContainerFileCitationMessageAnnotation)
+    if (annotation is CitationAnnotation citation
+        && citation.RawRepresentation is ContainerFileCitationMessageAnnotation containerCitation)
+    {
+        string filename = containerCitation.Filename;   // 文件名 (如 times_table.csv)
+        string containerId = containerCitation.ContainerId; // 容器 ID (cntr_xxx)
+        string fileId = containerCitation.FileId;      // 文件 ID (cfile_xxx)
+        ...
+    }
+}
+// 获取专用于下载沙箱容器文件的 ContainerClient
+ContainerClient containerClient = openAIClient.GetContainerClient();
+
+// 下载容器中的文件字节流
+var fileData = await containerClient.DownloadContainerFileAsync(
+    containerCitation.ContainerId,
+    containerCitation.FileId);
+
+// 保存到本地物理磁盘
+var outputPath = Path.Combine(Directory.GetCurrentDirectory(), safeFilename);
+await File.WriteAllBytesAsync(outputPath, fileData.ToArray());
+```
