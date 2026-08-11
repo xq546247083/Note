@@ -376,3 +376,41 @@ var response = await agent.RunAsync(
             .Build();
 
 ## AgentWithCodeAct
+
+    1、HyperlightCodeActProvider、HyperlightExecuteCodeFunction、HostedCodeInterpreterTool的区别
+        1、HyperlightCodeActProvider是跑在本地的，通过AIContextProviders添加
+        2、HyperlightExecuteCodeFunction是跑在本地的，通过Tools添加
+        2、HostedCodeInterpreterTool是跑在服务器
+        3、其它它们是一样的，本质就是执行代码的工具
+    2、创建执行代码工具
+
+``` Csharp
+using var codeAct = new HyperlightCodeActProvider(HyperlightCodeActProviderOptions.CreateForWasm(guestPath));
+
+AIAgent agent = new AIProjectClient(
+    new Uri(endpoint),
+    new DefaultAzureCredential())
+    .AsAIAgent(new ChatClientAgentOptions()
+    {
+        ChatOptions = new() { ModelId = deploymentName, Instructions = "Some Messages." },
+        AIContextProviders = [codeAct],
+    });
+```
+    3、提供给代码的工具
+
+``` Csharp
+var calculate = AIFunctionFactory.Create(
+    (double a, double b) => a * b,
+    name: "multiply",
+    description: "Multiply two numbers.");
+var options = HyperlightCodeActProviderOptions.CreateForWasm(guestPath);
+options.Tools = [calculate];
+using var codeAct = new HyperlightCodeActProvider(options);
+
+```
+
+    4、通过工具的方式添加代码执行器
+    using var executeCodeFuncation = new HyperlightExecuteCodeFunction(HyperlightCodeActProviderOptions.CreateForWasm(guestPath));
+    tools: [executeCodeFuncation]
+
+## 
