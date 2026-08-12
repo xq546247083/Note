@@ -425,3 +425,8 @@ using var codeAct = new HyperlightCodeActProvider(options);
         FileMemoryProvider
 
 ## AgentWithRAG
+
+    1、文本搜索
+        TextSearchProvider
+    2、Qdrant向量数据库
+    3、Neo4j向量数据库
