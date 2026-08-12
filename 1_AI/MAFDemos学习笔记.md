@@ -500,3 +500,15 @@ while (true)
         这个demo主要是演示服务器的工具使用，客户端怎么审批。具体见案例【AGUI-Step04_HumanInLoop】
     6、状态管理
         这个demo主要是演示状态管理。
+
+## DevUI
+
+    一个演示开发UI的Demo.
+
+## 评估
+
+   对结果进行评估。Evaluation
+   1、本地评估，不使用大模型
+   2、大模型评估
+
+## Harness
