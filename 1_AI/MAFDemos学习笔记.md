@@ -507,8 +507,85 @@ while (true)
 
 ## 评估
 
-   对结果进行评估。Evaluation
-   1、本地评估，不使用大模型
-   2、大模型评估
+    对结果进行评估。Evaluation
+    1、本地评估，不使用大模型
+    2、大模型评估
 
 ## Harness
+
+    1、创建harness
+
+```Csharp
+var chatClient =
+    new AIProjectClient(
+        new Uri(endpoint),
+        new DefaultAzureCredential(),
+        new AIProjectClientOptions { RetryPolicy = new ClientRetryPolicy(3) })  // Enable retries to improve resiliency.
+    .GetProjectOpenAIClient()
+    .GetResponsesClient()
+    .AsIChatClient(deploymentName);
+
+// AsHarnessAgent已经预先配置好了函数调用、每次服务调用的对话历史记录持久化、TodoProvider (待办事项提供者)、AgentModeProvider (模式提供者) 以及网络搜索功能。
+var agent = chatClient.AsHarnessAgent(new HarnessAgentOptions
+{
+    ChatOptions = new ChatOptions
+    {
+        Instructions = instructions,
+        Tools = [StockTools.CreateGetStockPriceTool()],
+        Reasoning = new() { Effort = ReasoningEffort.Medium },
+    },
+});
+
+// 启动一个harness的console
+await HarnessConsole.RunAgentAsync(
+    agent,
+    userPrompt: "Ask about a stock or say 'Review my watchlist and recommend some stocks to add' to get started.",
+    new HarnessConsoleOptions
+    {
+        Observers = [
+            new OpenAIResponsesWebSearchDisplayObserver(),
+            new OpenAIResponsesErrorObserver(),
+            .. HarnessConsoleOptions.BuildObserversWithPlanning(
+                agent,
+                planModeName: "plan",
+                executionModeName: "execute",
+                toolFormatters: ToolCallFormatter.BuildDefaultToolFormatters())],
+        CommandHandlers = HarnessConsoleOptions.BuildDefaultCommandHandlers(agent),
+    });
+```
+
+    2、添加记忆、Skills、代码执行等
+    3、loop执行、浏览器工具、本地记忆文件
+        // 保存执行记录到本地文件
+        using var tracerProvider = HarnessTracing.CreateFileTracerProvider(TracingSourceName);
+        .AsHarnessAgent(new HarnessAgentOptions
+        {
+            // 存储一些记忆文件到本地
+            FileMemoryStore = new FileSystemAgentFileStore(Path.Combine(AppContext.BaseDirectory, "agent-files")),
+            LoopEvaluators =
+            [
+                // 当前有2个默认的模式: "plan" and "execute".
+                new TodoCompletionLoopEvaluator(new TodoCompletionLoopEvaluatorOptions { Modes =["execute"] }),
+            ],
+            // 最多循环10次
+            LoopAgentOptions = new LoopAgentOptions { MaxIterations = 10 },
+            ChatOptions = new ChatOptions
+            {
+                Instructions = instructions,
+                Tools =
+                [
+                    // 一个本地的浏览器工具，可以打开网页，并把html转换为md
+                    new WebBrowsingTool(new WebBrowsingToolOptions { AllowPublicNetworks = true }),
+                ],
+                MaxOutputTokens = MaxOutputTokens,
+                Reasoning = new() { Effort = ReasoningEffort.Medium },
+            },
+        });
+    4、后台工作Agents
+        配置Agent的后台工作Agent列表：BackgroundAgents
+    5、工作区
+        FileAccessStore = new FileSystemAgentFileStore()
+    6、LoopAgent
+        让Agent在结果不满意的情况下，循环调用。
+        注意：Harness的LoopEvaluators，是Agent内部循环，直到执行完成。
+
