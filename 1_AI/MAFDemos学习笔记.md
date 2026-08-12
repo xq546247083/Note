@@ -758,3 +758,14 @@ return new WorkflowBuilder(numberRequestPort)
             .Build();
 
 ## SharedStates
+
+    1、写数据到共享状态
+        context.QueueStateUpdateAsync(key, fileContent, scopeName)
+    2、从共享状态读数据
+        context.ReadStateAsync<T>(key, scopeName)
+
+## Visualization
+
+    workflow.ToMermaidString()
+
+# 04-hosting
