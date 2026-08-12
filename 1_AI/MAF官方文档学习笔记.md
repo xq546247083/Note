@@ -94,7 +94,7 @@
         {
             Console.Write(update.Text);
             latestReceivedUpdate = update;
-            
+
             // 模拟中断了获取
             break;
         }
@@ -212,7 +212,7 @@
                     1、skill-md - 技能的 SKILL.md 及其同级资源按需从 MCP 服务器获取
                         var skillsProvider = new AgentSkillsProviderBuilder().UseMcpSkills(client).Build();
                     2、Archive - 技能作为一个打包存档（ZIP、TAR 或 gzip 压缩的 TAR）分发，该存档在本地下载和解压缩
-                        var skillsProvider = new AgentSkillsProviderBuilder().UseMcpSkills(client, 
+                        var skillsProvider = new AgentSkillsProviderBuilder().UseMcpSkills(client,
                         new AgentMcpSkillsSourceOptions{ArchiveSkillsDirectory = Path.Combine(AppContext.BaseDirectory, "extracted-skills"),ArchiveMaxFileCount = 50,ArchiveMaxSizeBytes = 2 * 1024 * 1024,}).Build();
         3、建设者
             AgentSkillsProviderBuilder将多个源组合到单个提供程序中，应用聚合、重复数据删除、缓存和可选筛选。
@@ -239,7 +239,7 @@
             4、筛选器 FilteringAgentSkillsSource
                 使用谓词以决定包含还是排除技能。
         5、自定义源
-            当内置源无法满足你的场景时，请实现你自己的源。 
+            当内置源无法满足你的场景时，请实现你自己的源。
                 1、对于叶源（从新来源 [如数据库或远程服务]生成技能的源），请子类化 AgentSkillsSource
                 2、对于转换另一个源输出的装饰器，请子类化DelegatingAgentSkillsSource
         6、构建AgentSkillsProvider的3种方案
@@ -262,7 +262,7 @@
                 UseToolApproval可以配置工具审批规则
             2、处理审批请求
         8、传递Skills的脚本错误信息
-            FunctionInvokingChatClient、UseFunctionInvocation、IncludeDetailedErrors 
+            FunctionInvokingChatClient、UseFunctionInvocation、IncludeDetailedErrors
 
 ## harness
 
@@ -499,7 +499,7 @@
                 Console.WriteLine($"Function Call Result: {result}");
 
                 return result;
-            }    
+            }
         3、IChatClient 中间件
             允许截获对 IChatClient 实现的调用，其中代理用于 IChatClient 推理调用，例如，使用 ChatClientAgent 时。
             async Task<ChatResponse> CustomChatClientMiddleware(
@@ -559,10 +559,10 @@
             string result = message.ToUpperInvariant();
 
             // 主动发给接收的节点列表，可以多次流式发送
-            await context.SendMessageAsync(result); 
+            await context.SendMessageAsync(result);
 
             // 返回值，自动发给接收的节点列表
-            return ValueTask.FromResult(result); 
+            return ValueTask.FromResult(result);
 
             // 生成返回给调用方或流式传输到调用方的工作流输出
             // 直接传递到工作流外。
@@ -585,11 +585,11 @@
             简单的一对一连接
             builder.AddEdge(sourceExecutor, targetExecutor);
         2、条件
-            具有确定消息流时间的条件的边缘 
+            具有确定消息流时间的条件的边缘
         3、switch-case
             根据条件路由到不同的执行程序
         4、并行
-            一个执行程序向多个目标发送消息 
+            一个执行程序向多个目标发送消息
         5、扇入
             多个执行程序发送到一个目标
             builder.AddFanInBarrierEdge(sources: [ worker1, worker2, worker3 ], target: aggregatorExecutor);
@@ -670,6 +670,7 @@
                 Console.WriteLine($"Final result: {outputEvt.Data}");
             }
         }
+
 ## Agents in Workflows
 
     Agent可以和执行器一样，作为节点在工作流中执行。
@@ -703,7 +704,7 @@
             {
                 case RequestInfoEvent requestInputEvt:
                     // 处理请求数字的请求端口，然后发送，节点跳转到下一个节点
-                    int guess = ...; 
+                    int guess = ...;
                     await handle.SendResponseAsync(requestInputEvt.Request.CreateResponse(guess));
                     break;
 
@@ -717,7 +718,7 @@
 
         状态允许工作流中的多个执行程序访问和修改常见数据。 此功能在工作流的不同部分需要共享信息时至关重要，尤其是在直接消息传递不可行或效率不高的情况下。
         private const string SharedScope = "SharedResponse";
-        
+
         // 更新状态
         await context.QueueStateUpdateAsync("Response", blanketResponse, scopeName: SharedScope, cancellationToken);
 
@@ -806,7 +807,6 @@
 ## 可视化
 
     workflow.ToMermaidString()
-
 
 ## 多Agent编排
 

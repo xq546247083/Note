@@ -1,91 +1,91 @@
 # MAF库
 
-  - 1. 核心与抽象 (Core & Abstractions)
-    - Microsoft.Agents.AI.Abstractions：
-      框架核心抽象库，提供 AIAgent、AgentSession、AIContextProvider 等核心接口与基类。
-    - Microsoft.Agents.AI：
-      框架核心实现库，提供 ChatClientAgent、TextSearchProvider (RAG) 及基础会话管理能力。
-  - 2. 模型与平台 Provider 接入 (Model Providers)
-    - Microsoft.Agents.AI.OpenAI：
-      提供对 OpenAI 及 OpenAI API 兼容服务（如 DeepSeek、Ollama）的 Agent 接入适配。
-    - Microsoft.Agents.AI.Anthropic：
-      提供对 Anthropic Claude 系列模型的 Agent 接入适配。
-    - Microsoft.Agents.AI.Foundry：
-      提供对 Azure AI Foundry 云端托管 Agent 和模型的接入适配。
-    - Microsoft.Agents.AI.AzureAI：
-      提供对 Azure AI 服务基础模型与 Agent 的接入适配。
-    - Microsoft.Agents.AI.AzureAI.Persistent：
-      提供对 Azure AI 云端持久化 Agent（云端保留 Thread/Run 状态）的接入适配。
-    - Microsoft.Agents.AI.CopilotStudio：
-      提供对微软 Copilot Studio 智能体的接入适配。
-    - Microsoft.Agents.AI.GitHub.Copilot：
-      提供对 GitHub Copilot SDK 的 Agent 接入适配。
-  - 3. 工作流编排 (Workflows & Declarative)
-    - Microsoft.Agents.AI.Workflows：
-      工作流核心库，提供基于 Executor（处理节点）和 Edge（数据边）的 C# 代码管道编排。
-    - Microsoft.Agents.AI.Workflows.Generators：
-      Roslyn 源码生成器，在编译期自动生成工作流节点路由代码以提升性能。
-    - Microsoft.Agents.AI.Workflows.Declarative：
-      提供基于 JSON/YAML 声明式语法定义与执行工作流的能力。
-    - Microsoft.Agents.AI.Declarative：
-      提供基于 JSON/YAML 声明式语法定义与配置 Agent 的能力。
-    - Microsoft.Agents.AI.Workflows.Declarative.Mcp：
-      提供在声明式工作流中调用 MCP (Model Context Protocol) 服务工具的能力。
-    - Microsoft.Agents.AI.Workflows.Declarative.AzureAI：
-      提供在声明式工作流中接入 Azure AI Agent 的能力。
-    - Microsoft.Agents.AI.Workflows.Declarative.Foundry：
-      提供在声明式工作流中接入 Azure AI Foundry Agent 的能力。
-  - 4. 服务宿主与 Web 部署 (Hosting & Server)
-    - Microsoft.Agents.AI.Hosting：
-      通用 Agent 宿主扩展，提供与 .NET 依赖注入 (DI) 容器的集成支持。
-    - Microsoft.Agents.AI.Hosting.AspNetCore：
-      支持将 Agent 直接注册并发布为 ASP.NET Core Web API / REST 服务。
-    - Microsoft.Agents.AI.Hosting.AzureFunctions：
-      支持将 Agent 部署在 Azure Functions 无服务器函数上运行。
-    - Microsoft.Agents.AI.Hosting.OpenAI：
-      支持将本地 Agent 服务暴露为兼容 OpenAI 官方 REST API 格式的 HTTP 接口。
-    - Microsoft.Agents.AI.Foundry.Hosting：
-      提供 Azure AI Foundry 容器化环境下的 Agent 宿主运行支持。
-    - Microsoft.Agents.AI.DurableTask：基
-      于 Durable Task Framework 提供分布式、防崩溃的长运行工作流状态恢复与持久化。
-  - 5. 协议与 Agent 互联 (Protocols & Interop)
-    - Microsoft.Agents.AI.A2A：
-      提供 Agent2Agent (A2A) 跨网络智能体互联通信协议的核心支持。
-    - Microsoft.Agents.AI.Hosting.A2A：
-      提供 A2A 协议在通用宿主环境下的服务注册与响应支持。
-    - Microsoft.Agents.AI.Hosting.A2A.AspNetCore：
-      提供在 ASP.NET Core 中将 Agent 暴露为符合 A2A 规范端点支持。
-    - Microsoft.Agents.AI.AGUI：
-      提供 Agent-User Interaction (AG-UI) 协议客户端能力，用于前端 UI 实时互动。
-    - Microsoft.Agents.AI.Hosting.AGUI.AspNetCore：
-      提供在 ASP.NET Core 中托管 AG-UI 协议端点、向前端流式传输 UI 的支持。
-    - Microsoft.Agents.AI.Mcp：
-      提供 Model Context Protocol (MCP) 支持，允许 Agent 跨服务调用 MCP 工具。
-  - 6. 数据与状态持久化 (Storage & Memory)
-    - Microsoft.Agents.AI.CosmosNoSql：
-      使用 Azure Cosmos DB NoSQL 实现对话历史 (ChatHistoryProvider) 与检查点的持久化存储。
-    - Microsoft.Agents.AI.Valkey：
-      使用 Valkey (Redis) 实现高并发对话历史存储及基于全文检索的上下文检索。
-    - Microsoft.Agents.AI.FoundryMemory：
-      提供接入 Azure AI Foundry 云端记忆组件的集成支持。
-  - 7. 工具、沙箱与代码执行 (Tools & Execution)
-    - Microsoft.Agents.AI.Tools.Shell：
-      提供跨平台 Shell 命令行工具，允许 Agent 在授权下运行本地终端命令（支持安全审批）。
-    - Microsoft.Agents.AI.Hyperlight：
-      集成 Hyperlight 轻量级虚拟机微沙箱，提供极高安全级别的 Python 代码执行 (CodeAct) 能力。
-    - Microsoft.Agents.AI.LocalCodeAct：
-      提供带语法树 (AST) 校验的本地 Python 代码执行器支持。
-    - Microsoft.Agents.AI.Harness：
-      提供开箱即用的预配置智能体 HarnessAgent，专用于自动化长运行任务。
-  - 8. 开发调试与合规治理 (DevTools & Governance)
-    - Microsoft.Agents.AI.DevUI：
-      提供本地开发调试 UI 控制台界面（类似 Swagger），方便可视化测试与调优 Agent。
-    - Aspire.Hosting.AgentFramework.DevUI：
-      提供在 .NET Aspire 分布式应用中一键集成并启动 Agent DevUI 的支持。
-    - Microsoft.Agents.AI.Purview：
-      连接 Microsoft Purview 数据治理平台，提供企业级 AI 合规与数据防泄漏审计支持。
-    - Microsoft.Agents.AI.ProjectTemplates：
-      提供 dotnet new 脚手架模版包，用于快速初始化 Agent 开发工程。
+- 1. 核心与抽象 (Core & Abstractions)
+  - Microsoft.Agents.AI.Abstractions：
+    框架核心抽象库，提供 AIAgent、AgentSession、AIContextProvider 等核心接口与基类。
+  - Microsoft.Agents.AI：
+    框架核心实现库，提供 ChatClientAgent、TextSearchProvider (RAG) 及基础会话管理能力。
+- 2. 模型与平台 Provider 接入 (Model Providers)
+  - Microsoft.Agents.AI.OpenAI：
+    提供对 OpenAI 及 OpenAI API 兼容服务（如 DeepSeek、Ollama）的 Agent 接入适配。
+  - Microsoft.Agents.AI.Anthropic：
+    提供对 Anthropic Claude 系列模型的 Agent 接入适配。
+  - Microsoft.Agents.AI.Foundry：
+    提供对 Azure AI Foundry 云端托管 Agent 和模型的接入适配。
+  - Microsoft.Agents.AI.AzureAI：
+    提供对 Azure AI 服务基础模型与 Agent 的接入适配。
+  - Microsoft.Agents.AI.AzureAI.Persistent：
+    提供对 Azure AI 云端持久化 Agent（云端保留 Thread/Run 状态）的接入适配。
+  - Microsoft.Agents.AI.CopilotStudio：
+    提供对微软 Copilot Studio 智能体的接入适配。
+  - Microsoft.Agents.AI.GitHub.Copilot：
+    提供对 GitHub Copilot SDK 的 Agent 接入适配。
+- 3. 工作流编排 (Workflows & Declarative)
+  - Microsoft.Agents.AI.Workflows：
+    工作流核心库，提供基于 Executor（处理节点）和 Edge（数据边）的 C# 代码管道编排。
+  - Microsoft.Agents.AI.Workflows.Generators：
+    Roslyn 源码生成器，在编译期自动生成工作流节点路由代码以提升性能。
+  - Microsoft.Agents.AI.Workflows.Declarative：
+    提供基于 JSON/YAML 声明式语法定义与执行工作流的能力。
+  - Microsoft.Agents.AI.Declarative：
+    提供基于 JSON/YAML 声明式语法定义与配置 Agent 的能力。
+  - Microsoft.Agents.AI.Workflows.Declarative.Mcp：
+    提供在声明式工作流中调用 MCP (Model Context Protocol) 服务工具的能力。
+  - Microsoft.Agents.AI.Workflows.Declarative.AzureAI：
+    提供在声明式工作流中接入 Azure AI Agent 的能力。
+  - Microsoft.Agents.AI.Workflows.Declarative.Foundry：
+    提供在声明式工作流中接入 Azure AI Foundry Agent 的能力。
+- 4. 服务宿主与 Web 部署 (Hosting & Server)
+  - Microsoft.Agents.AI.Hosting：
+    通用 Agent 宿主扩展，提供与 .NET 依赖注入 (DI) 容器的集成支持。
+  - Microsoft.Agents.AI.Hosting.AspNetCore：
+    支持将 Agent 直接注册并发布为 ASP.NET Core Web API / REST 服务。
+  - Microsoft.Agents.AI.Hosting.AzureFunctions：
+    支持将 Agent 部署在 Azure Functions 无服务器函数上运行。
+  - Microsoft.Agents.AI.Hosting.OpenAI：
+    支持将本地 Agent 服务暴露为兼容 OpenAI 官方 REST API 格式的 HTTP 接口。
+  - Microsoft.Agents.AI.Foundry.Hosting：
+    提供 Azure AI Foundry 容器化环境下的 Agent 宿主运行支持。
+  - Microsoft.Agents.AI.DurableTask：基
+    于 Durable Task Framework 提供分布式、防崩溃的长运行工作流状态恢复与持久化。
+- 5. 协议与 Agent 互联 (Protocols & Interop)
+  - Microsoft.Agents.AI.A2A：
+    提供 Agent2Agent (A2A) 跨网络智能体互联通信协议的核心支持。
+  - Microsoft.Agents.AI.Hosting.A2A：
+    提供 A2A 协议在通用宿主环境下的服务注册与响应支持。
+  - Microsoft.Agents.AI.Hosting.A2A.AspNetCore：
+    提供在 ASP.NET Core 中将 Agent 暴露为符合 A2A 规范端点支持。
+  - Microsoft.Agents.AI.AGUI：
+    提供 Agent-User Interaction (AG-UI) 协议客户端能力，用于前端 UI 实时互动。
+  - Microsoft.Agents.AI.Hosting.AGUI.AspNetCore：
+    提供在 ASP.NET Core 中托管 AG-UI 协议端点、向前端流式传输 UI 的支持。
+  - Microsoft.Agents.AI.Mcp：
+    提供 Model Context Protocol (MCP) 支持，允许 Agent 跨服务调用 MCP 工具。
+- 6. 数据与状态持久化 (Storage & Memory)
+  - Microsoft.Agents.AI.CosmosNoSql：
+    使用 Azure Cosmos DB NoSQL 实现对话历史 (ChatHistoryProvider) 与检查点的持久化存储。
+  - Microsoft.Agents.AI.Valkey：
+    使用 Valkey (Redis) 实现高并发对话历史存储及基于全文检索的上下文检索。
+  - Microsoft.Agents.AI.FoundryMemory：
+    提供接入 Azure AI Foundry 云端记忆组件的集成支持。
+- 7. 工具、沙箱与代码执行 (Tools & Execution)
+  - Microsoft.Agents.AI.Tools.Shell：
+    提供跨平台 Shell 命令行工具，允许 Agent 在授权下运行本地终端命令（支持安全审批）。
+  - Microsoft.Agents.AI.Hyperlight：
+    集成 Hyperlight 轻量级虚拟机微沙箱，提供极高安全级别的 Python 代码执行 (CodeAct) 能力。
+  - Microsoft.Agents.AI.LocalCodeAct：
+    提供带语法树 (AST) 校验的本地 Python 代码执行器支持。
+  - Microsoft.Agents.AI.Harness：
+    提供开箱即用的预配置智能体 HarnessAgent，专用于自动化长运行任务。
+- 8. 开发调试与合规治理 (DevTools & Governance)
+  - Microsoft.Agents.AI.DevUI：
+    提供本地开发调试 UI 控制台界面（类似 Swagger），方便可视化测试与调优 Agent。
+  - Aspire.Hosting.AgentFramework.DevUI：
+    提供在 .NET Aspire 分布式应用中一键集成并启动 Agent DevUI 的支持。
+  - Microsoft.Agents.AI.Purview：
+    连接 Microsoft Purview 数据治理平台，提供企业级 AI 合规与数据防泄漏审计支持。
+  - Microsoft.Agents.AI.ProjectTemplates：
+    提供 dotnet new 脚手架模版包，用于快速初始化 Agent 开发工程。
 
 # 客户端模式
 
@@ -109,7 +109,7 @@
     ImageClient `GetImageClient(string model)`：图像客户端（DALL-E 文本生成图片与图像重绘）。
     VideoClient `GetVideoClient()`：视频客户端（Sora 等文本/图像生成视频模型）。
     RealtimeClient `GetRealtimeClient()`：低延迟实时双向语音/文本流会话客户端 (WebSockets)。
-    
+
     4. 微调、评估与管理
     EmbeddingClient `GetEmbeddingClient(string model)`：文本向量化客户端，用于将文本转换为密集向量数组。
     ModerationClient `GetModerationClient(string model)`：内容安全审核客户端，用于检测敏感/违规内容。
@@ -146,38 +146,38 @@
 
 # MAF架构
 
-  - 1. 核心定位与五大编排模式
-    - 定位：微软统一的 AI 智能体开发框架，专为生产级企业应用设计。
-    - 顺序编排 (Sequential)：多 Agent 按固定先后步骤流水线协同。
-    - 并发编排 (Concurrent)：多 Agent 同时并行处理任务。
-    - 群聊编排 (Group Chat)：多 Agent 在同一个上下文空间里讨论协作。
-    - 转交编排 (Handoff)：主 Agent 完成阶段性子任务后，把控制权完全转交给下一个专业 Agent。
-    - 磁性/主从编排 (Magnetic)：包工头 (Manager Agent) 动态创建修改任务清单并派发子任务。
-  - 2. 企业级生产特性
-    - 可观测性 (Observability)：基于 OpenTelemetry，原生对接 Microsoft Foundry 仪表盘，全程追踪工具调用与推理。
-    - 安全控制 (Security)：集成 Azure AI Foundry 的 RBAC 角色权限控制与内置内容安全过滤。
-    - 持久恢复 (Durability)：支持 Agent 线程与工作流暂停、断点恢复和异常重试，适应长运行任务。
-    - 人工干预 (Control)：支持 Human-In-The-Loop，可强制关键动作需人工审批。
-    - 跨生态兼容 (Interoperability)：云厂商无绑定、模型 Provider 无绑定（OpenAI / Azure / MiniMax 等），原生支持 MCP 和 A2A 协议。
-  - 3. 核心概念与代码抽象
-    - Agent 实体：通过声明 LLM 客户端、System Instructions (指令) 与 Name 构造。可通过 .run() 或 .run_stream() 执行。
-    - Tools (工具)：可在 Agent 初始化时注册，或在单次 .run(tools=[...]) 时按需动态传入。
-    - Session / Thread (会话线程)：处理多轮对话。支持对象序列化 (.serialize()) 与反序列化 (.deserialize_thread()) 实现断点持久化。
-    - Middleware (中间件)：
-      - Function Middleware：在 Agent 调用工具前后拦截（如记录工具参数与结果日志）。
-      - Chat Middleware：在 Agent 与大模型交互前后拦截（如记录发给 LLM 的 Messages 数组）。
-    - Memory (记忆存储)：支持内存线程存储、基于 ChatMessageStore 的持久化消息存储，以及接入 Mem0 的动态上下文记忆。
-  - 4. 工作流组件 (Workflows)
-    - 执行器 (Executors)：工作流的基本处理节点，可以是 AIAgent，也可以是纯 C#/Python 自定义业务逻辑代码。
-    - 边 (Edges)：定义节点间的数据传递路径，包含：
-      - Direct Edge (单向直连边)
-      - Conditional Edge (条件边)
-      - Switch-case Edge (多分支选择边)
-      - Fan-out / Fan-in Edge (扇出并发 / 扇入汇总边)
-    - 事件 (Events)：
-      - WorkflowStartedEvent - 工作流执行开始
-      - WorkflowOutputEvent - 工作流生成输出
-      - WorkflowErrorEvent - 工作流遇到错误
-      - ExecutorInvokeEvent - 执行器开始处理
-      - ExecutorCompleteEvent - 执行器处理完成
-      - RequestInfoEvent - 发出请求
+- 1. 核心定位与五大编排模式
+  - 定位：微软统一的 AI 智能体开发框架，专为生产级企业应用设计。
+  - 顺序编排 (Sequential)：多 Agent 按固定先后步骤流水线协同。
+  - 并发编排 (Concurrent)：多 Agent 同时并行处理任务。
+  - 群聊编排 (Group Chat)：多 Agent 在同一个上下文空间里讨论协作。
+  - 转交编排 (Handoff)：主 Agent 完成阶段性子任务后，把控制权完全转交给下一个专业 Agent。
+  - 磁性/主从编排 (Magnetic)：包工头 (Manager Agent) 动态创建修改任务清单并派发子任务。
+- 2. 企业级生产特性
+  - 可观测性 (Observability)：基于 OpenTelemetry，原生对接 Microsoft Foundry 仪表盘，全程追踪工具调用与推理。
+  - 安全控制 (Security)：集成 Azure AI Foundry 的 RBAC 角色权限控制与内置内容安全过滤。
+  - 持久恢复 (Durability)：支持 Agent 线程与工作流暂停、断点恢复和异常重试，适应长运行任务。
+  - 人工干预 (Control)：支持 Human-In-The-Loop，可强制关键动作需人工审批。
+  - 跨生态兼容 (Interoperability)：云厂商无绑定、模型 Provider 无绑定（OpenAI / Azure / MiniMax 等），原生支持 MCP 和 A2A 协议。
+- 3. 核心概念与代码抽象
+  - Agent 实体：通过声明 LLM 客户端、System Instructions (指令) 与 Name 构造。可通过 .run() 或 .run_stream() 执行。
+  - Tools (工具)：可在 Agent 初始化时注册，或在单次 .run(tools=[...]) 时按需动态传入。
+  - Session / Thread (会话线程)：处理多轮对话。支持对象序列化 (.serialize()) 与反序列化 (.deserialize_thread()) 实现断点持久化。
+  - Middleware (中间件)：
+    - Function Middleware：在 Agent 调用工具前后拦截（如记录工具参数与结果日志）。
+    - Chat Middleware：在 Agent 与大模型交互前后拦截（如记录发给 LLM 的 Messages 数组）。
+  - Memory (记忆存储)：支持内存线程存储、基于 ChatMessageStore 的持久化消息存储，以及接入 Mem0 的动态上下文记忆。
+- 4. 工作流组件 (Workflows)
+  - 执行器 (Executors)：工作流的基本处理节点，可以是 AIAgent，也可以是纯 C#/Python 自定义业务逻辑代码。
+  - 边 (Edges)：定义节点间的数据传递路径，包含：
+    - Direct Edge (单向直连边)
+    - Conditional Edge (条件边)
+    - Switch-case Edge (多分支选择边)
+    - Fan-out / Fan-in Edge (扇出并发 / 扇入汇总边)
+  - 事件 (Events)：
+    - WorkflowStartedEvent - 工作流执行开始
+    - WorkflowOutputEvent - 工作流生成输出
+    - WorkflowErrorEvent - 工作流遇到错误
+    - ExecutorInvokeEvent - 执行器开始处理
+    - ExecutorCompleteEvent - 执行器处理完成
+    - RequestInfoEvent - 发出请求
