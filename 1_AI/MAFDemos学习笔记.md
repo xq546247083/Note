@@ -598,3 +598,7 @@ await HarnessConsole.RunAgentAsync(
             await using var mcpClient = await McpClient.CreateAsync(new HttpClientTransport());
     2、创建主机执行的MCP服务工具
         new HostedMcpServerTool()
+
+## Observability
+
+    Telemetry，参考【02-agents-Observability-AgentOpenTelemetry】
