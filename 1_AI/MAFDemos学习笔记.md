@@ -655,3 +655,16 @@ await foreach (WorkflowEvent evt in run.WatchStreamAsync())
         执行节点里面本质是Agent
     2、工作流转换为Agent
         workflow.AsAIAgent()
+
+## Checkpoint
+
+    1、创建Checkpoint
+
+``` Csharp
+var checkpointManager = CheckpointManager.Default;
+await using StreamingRun checkpointedRun = await InProcessExecution.RunStreamingAsync(workflow, NumberSignal.Init, checkpointManager);
+await foreach (WorkflowEvent evt in checkpointedRun.WatchStreamAsync()){}
+```
+
+    2、恢复工作流
+        await checkpointedRun.RestoreCheckpointAsync(savedCheckpoint, CancellationToken.None);
