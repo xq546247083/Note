@@ -589,3 +589,12 @@ await HarnessConsole.RunAgentAsync(
         让Agent在结果不满意的情况下，循环调用。
         注意：Harness的LoopEvaluators，是Agent内部循环，直到执行完成。
 
+## MCP
+
+    1、连接MCP服务，创建Tools
+        1、创建本地执行的MCP客户端（在本地执行）
+            await using var mcpClient = await McpClient.CreateAsync(new StdioClientTransport());
+        2、创建服务器执行的MCP客户端（在MCP服务器执行）
+            await using var mcpClient = await McpClient.CreateAsync(new HttpClientTransport());
+    2、创建主机执行的MCP服务工具
+        new HostedMcpServerTool()
