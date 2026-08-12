@@ -4,7 +4,7 @@
 
     1、创建Agent，并执行
 
-``` Csharp
+```Csharp
 var clientOptions = new OpenAIClientOptions { Endpoint = new Uri(endpoint) };
 var client = new OpenAIClient(new ApiKeyCredential(apiKey), clientOptions);
 
@@ -20,7 +20,7 @@ await foreach (var update in agent.RunStreamingAsync("给我讲一个笑话。"))
 
     2、添加工具
 
-``` Csharp
+```Csharp
 var agent = client
     .GetChatClient(model)
     .AsAIAgent(instructions: "你是一个幽默的助手，擅长讲笑话。", name: "Joker"
@@ -29,8 +29,7 @@ var agent = client
 
     3、创建会话
 
-
-``` Csharp
+```Csharp
 var session = await agent.CreateSessionAsync();
 await foreach (var update in agent.RunStreamingAsync("我叫啥？", session))
 {
@@ -40,8 +39,7 @@ await foreach (var update in agent.RunStreamingAsync("我叫啥？", session))
 
     4、添加上下文
 
-
-``` Csharp
+```Csharp
 var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
 {
     ChatOptions = new ChatOptions
@@ -54,7 +52,7 @@ var agent = chatClient.AsAIAgent(new ChatClientAgentOptions
 
     5、序列化会话和恢复会话
 
-``` Csharp
+```Csharp
 // 创建会话
 var session = await agent.CreateSessionAsync();
 // 序列化会话
@@ -65,7 +63,7 @@ var deserializedSession = await agent.DeserializeSessionAsync(sessionElement);
 
     6、工作流
 
-``` Csharp
+```Csharp
 Func<string, string> uppercaseFunc = s => s.ToUpperInvariant();
 var uppercase = uppercaseFunc.BindAsExecutor("UppercaseExecutor");
 
@@ -93,7 +91,7 @@ foreach (WorkflowEvent evt in run.NewEvents)
 
     1、Agent转变为工具
 
-``` Csharp
+```Csharp
 // 方案1
 agent.AsAIFunction()
 // 方案2
@@ -108,7 +106,7 @@ async Task<string> RunAgentAsync(string input, CancellationToken cancellationTok
 
     2、后台响应
 
-``` Csharp
+```Csharp
 
 // 允许服务器返回一个Task
 var options = new() { AllowBackgroundResponses = true };
@@ -128,7 +126,7 @@ while (response.ContinuationToken is { } token)
 
     3、选择沟通方式
 
-``` Csharp
+```Csharp
 var options = new()
 {
     PreferredBindings = [ProtocolBindingNames.HttpJson]
@@ -139,7 +137,7 @@ var agent = agentCard.AsAIAgent(options: options);
 
     4、重连
 
-``` Csharp
+```Csharp
 ResponseContinuationToken? continuationToken = null;
 await foreach (var update in agent.RunStreamingAsync("some messages.", session))
 {
@@ -170,7 +168,7 @@ if (continuationToken is not null)
 
     1、接入OpenAI
 
-``` Csharp
+```Csharp
 // 下面的ResponsesClient可以替换为ChatClient，用来表示对话的
 // 创建Agent方式1
 var agent =
@@ -201,7 +199,7 @@ var response = await agent.RunAsync("Some Messages.");
 
     2、接入OpenAI的云端会话
 
-``` Csharp
+```Csharp
 // 创建云端会话客户端
 var conversationClient = openAIClient.GetConversationClient();
 // 向 OpenAI 服务器请求创建一个新会话，拿到云端唯一的 conversationId（如 conv_123abc）
@@ -215,8 +213,10 @@ var getConversationItemsResults = conversationClient.GetConversationItems(conver
 // 在 OpenAI 云端删除/销毁这个会话，清理云端数据
 var deleteConversationResult = conversationClient.DeleteConversation(conversationId);
 ```
+
     3、接入OpenAI的云端代码编译执行和下载生成的文件
-``` Csharp
+
+```Csharp
 // 挂载 HostedCodeInterpreterTool 赋予 Agent 跑 Python 代码的能力
 var agent = openAIClient
     .GetResponsesClient()
@@ -225,7 +225,7 @@ var agent = openAIClient
         instructions: "你是一个可以通过写代码生成文件的助手。",
         name: "CodeInterpreterAgent",
         // Hosted，在云端执行代码的工具。指定给 AI 服务的托管工具，使它能够执行生成的代码。
-        tools: [new HostedCodeInterpreterTool()]); 
+        tools: [new HostedCodeInterpreterTool()]);
 // 让 Agent 生成 1 到 12 的乘法口诀表 CSV 文件
 AgentResponse response = await agent.RunAsync(
     "Create a CSV file with the multiplication times tables from 1 to 12. Include headers.");
@@ -257,14 +257,15 @@ await File.WriteAllBytesAsync(outputPath, fileData.ToArray());
 
     4、A2A方式提供Agent
 
-``` Csharp
+```Csharp
 var agentCardResolver = new A2ACardResolver(new Uri(a2aAgentHost));
 AIAgent agent = await agentCardResolver.GetAIAgentAsync();
 ```
+
     5、OpenAI的Chat、Response
     6、自定义Agent
 
-``` Csharp
+```Csharp
 // 继承这个，实现对应的方法即可
 public class UpperCaseParrotAgent : AIAgent
 {
@@ -314,7 +315,7 @@ public class UpperCaseParrotAgent : AIAgent
 
     1、基于MCP的Skills
 
-``` Csharp
+```Csharp
 await using McpClient client = await McpClient.CreateAsync(
     new StdioClientTransport(new()
     {
@@ -329,7 +330,7 @@ var skillsProvider = new AgentSkillsProviderBuilder()
 
     2、基于文件的Skills
 
-``` Csharp
+```Csharp
 // 创建基于文件的Skills提供者
 var skillsProvider = new AgentSkillsProvider(Path.Combine(AppContext.BaseDirectory, "skills"),SubprocessScriptRunner.RunAsync);
 
@@ -357,7 +358,7 @@ var agent = new AIProjectClient(new Uri(endpoint), new DefaultAzureCredential())
 var response = await agent.RunAsync(
     "How many kilometers is a marathon (26.2 miles)? And how many pounds is 75 kilograms?");
 ```
-    
+
     3、基于代码的Skills
         AgentInlineSkill
     4、基于类的Skills
@@ -371,7 +372,7 @@ var response = await agent.RunAsync(
             // 基于代码的Skills
             .UseSkill(volumeConverterSkill)
             // 基于类的Skills
-            .UseSkill(temperatureConverter)  
+            .UseSkill(temperatureConverter)
             .UseFileScriptRunner(SubprocessScriptRunner.RunAsync)
             .Build();
 
@@ -384,7 +385,7 @@ var response = await agent.RunAsync(
         3、其它它们是一样的，本质就是执行代码的工具
     2、创建执行代码工具
 
-``` Csharp
+```Csharp
 using var codeAct = new HyperlightCodeActProvider(HyperlightCodeActProviderOptions.CreateForWasm(guestPath));
 
 AIAgent agent = new AIProjectClient(
@@ -396,9 +397,10 @@ AIAgent agent = new AIProjectClient(
         AIContextProviders = [codeAct],
     });
 ```
+
     3、提供给代码的工具
 
-``` Csharp
+```Csharp
 var calculate = AIFunctionFactory.Create(
     (double a, double b) => a * b,
     name: "multiply",
@@ -430,3 +432,57 @@ using var codeAct = new HyperlightCodeActProvider(options);
         TextSearchProvider
     2、Qdrant向量数据库
     3、Neo4j向量数据库
+
+## AGUI
+
+    它的主要作用是实现 “AI 智能体前后端分离”：把 Agent 的核心计算逻辑放在后台服务器运行，前端（Web 网页、命令行终端、手机 App 等）只负责展示和交互。
+    1、创建服务端
+
+```Csharp
+var clientOptions = new OpenAIClientOptions { Endpoint = new Uri(endpoint) };
+var openAIClient = new OpenAIClient(new ApiKeyCredential(apiKey), clientOptions);
+var chatClient = openAIClient.GetChatClient(model).AsIChatClient();
+var agent = chatClient.AsAIAgent(
+    name: "AGUIAssistant",
+    instructions: "You are a helpful assistant.");
+
+app.MapAGUIServer("/", agent);
+await app.RunAsync();
+```
+
+    2、创建客户端
+
+```Csharp
+using HttpClient httpClient = new()
+{
+    Timeout = TimeSpan.FromSeconds(60)
+};
+
+var chatClient = new AGUIChatClient(new AGUIChatClientOptions(httpClient, serverUrl));
+var agent = chatClient.AsAIAgent(
+    name: "agui-client",
+    description: "AG-UI Client Agent");
+
+var session = await agent.CreateSessionAsync();
+var messages =[new(ChatRole.System, "You are a helpful assistant.")];
+while (true)
+{
+    string? message = Console.ReadLine();
+    messages.Add(new ChatMessage(ChatRole.User, message));
+    await foreach (AgentResponseUpdate update in agent.RunStreamingAsync(messages, session))
+    {
+        var chatUpdate = update.AsChatResponseUpdate();
+        foreach (AIContent content in update.Contents)
+        {
+            if (content is TextContent textContent)
+            {
+                Console.Write(textContent.Text);
+            }
+            else if (content is ErrorContent errorContent)
+            {
+                Console.WriteLine($"\n[Error: {errorContent.Message}]");
+            }
+        }
+    }
+}
+```
