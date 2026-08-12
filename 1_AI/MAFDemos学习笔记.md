@@ -305,7 +305,8 @@ public class UpperCaseParrotAgent : AIAgent
         .Use(FunctionCallMiddleware)
     11、后台响应
         var options = new() { AllowBackgroundResponses = true };
-    12、YAML定义
+    12、Declarative
+        YAML定义
     13、Shell执行
         LocalShellExecutor
     14、Todo任务列表
@@ -507,7 +508,8 @@ while (true)
 
 ## 评估
 
-    对结果进行评估。Evaluation
+    agent.EvaluateAsync()
+    对结果进行评估。
     1、本地评估，不使用大模型
     2、大模型评估
 
@@ -675,3 +677,40 @@ await foreach (WorkflowEvent evt in checkpointedRun.WatchStreamAsync()){}
         AddFanOutEdge
     2、扇入，把多个节点的结果并发给一个节点
         AddFanInBarrierEdge
+
+## ConditionalEdges
+
+    1、条件边的最后一个参数是条件，传入后，就会判断
+    2、SwitchCase
+
+``` Csharp
+ builder.AddSwitch(spamDetectionExecutor, switchBuilder =>
+     switchBuilder
+     .AddCase(
+         GetCondition(expectedDecision: SpamDecision.NotSpam),
+         emailAssistantExecutor
+     )
+     .AddCase(
+         GetCondition(expectedDecision: SpamDecision.Spam),
+         handleSpamExecutor
+     )
+     .WithDefault(
+         handleUncertainExecutor
+     )
+ )
+```
+
+    3、多选条件边
+        AddFanOutEdge中传入targetSelector，可以用代码控制下一个节点列表
+
+## Declarative
+
+    工作流使用yaml定义。使用方法在【03-workflows-Declarative】中，具体需要使用的时候再看。
+
+## Evaluation
+
+    1、启动评估
+        await using Run run = await InProcessExecution.RunAsync(workflow,new ChatMessage(ChatRole.User, "Plan a weekend trip to Paris"));
+        var results = await run.EvaluateAsync(local);
+
+## HumanInTheLoop
