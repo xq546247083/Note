@@ -714,3 +714,47 @@ await foreach (WorkflowEvent evt in checkpointedRun.WatchStreamAsync()){}
         var results = await run.EvaluateAsync(local);
 
 ## HumanInTheLoop
+
+    1、创建RequestPort
+
+``` Csharp
+var numberRequestPort = RequestPort.Create<NumberSignal, int>("GuessNumber");
+var judgeExecutor = new JudgeExecutor(42);
+
+// Build the workflow by connecting executors in a loop
+return new WorkflowBuilder(numberRequestPort)
+    .AddEdge(numberRequestPort, judgeExecutor)
+    .AddEdge(judgeExecutor, numberRequestPort)
+    .WithOutputFrom(judgeExecutor)
+    .Build();
+```
+
+    2、其他见：【03-workflows-HumanInTheLoop】
+
+## Loop
+
+    可以把节点组成一个环状，通过YieldOutputAsync结束执行
+
+## Observability
+
+    1、开启链路追踪
+        WithOpenTelemetry
+    2、转换为Agent，再开启链路追踪
+        new OpenTelemetryAgent(workflow.AsAIAgent())
+
+## Orchestration(编排)
+
+    1、Handoff
+        var handoffBuilder = AgentWorkflowBuilder.CreateHandoffBuilderWith(agents.IntakeAgent);
+    2、Magentic
+        var workflow = new MagenticWorkflowBuilder(managerAgent)
+            .AddParticipants([researcherAgent, coderAgent])
+            .WithName("Magentic Orchestration Workflow")
+            .WithDescription("Coordinates a researcher and coder to solve a complex analytical task.")
+            .RequirePlanSignoff(false)
+            .WithMaxRounds(10)
+            .WithMaxStalls(3)
+            .WithMaxResets(2)
+            .Build();
+
+## SharedStates
