@@ -668,3 +668,10 @@ await foreach (WorkflowEvent evt in checkpointedRun.WatchStreamAsync()){}
 
     2、恢复工作流
         await checkpointedRun.RestoreCheckpointAsync(savedCheckpoint, CancellationToken.None);
+
+## Concurrent
+
+    1、扇出，并发给多个节点执行
+        AddFanOutEdge
+    2、扇入，把多个节点的结果并发给一个节点
+        AddFanInBarrierEdge
