@@ -602,3 +602,56 @@ await HarnessConsole.RunAgentAsync(
 ## Observability
 
     Telemetry，参考【02-agents-Observability-AgentOpenTelemetry】
+
+# 03-workflows
+
+## _StartHere
+
+    1、创建工作流
+
+``` Csharp
+UppercaseExecutor uppercase = new();
+ReverseTextExecutor reverse = new();
+var builder = new(uppercase);
+builder.AddEdge(uppercase, reverse).WithOutputFrom(reverse);
+var workflow = builder.Build();
+await using StreamingRun run = await InProcessExecution.RunStreamingAsync(workflow, input: "Hello, World!");
+await foreach (WorkflowEvent evt in run.WatchStreamAsync())
+{
+    if (evt is ExecutorCompletedEvent executorCompleted)
+    {
+        Console.WriteLine($"{executorCompleted.ExecutorId}: {executorCompleted.Data}");
+    }
+    else if (evt is WorkflowErrorEvent workflowError)
+    {
+        Console.Error.WriteLine(workflowError.Exception?.ToString() ?? "Unknown workflow error occurred.");
+    }
+    else if (evt is ExecutorFailedEvent executorFailed)
+    {
+        Console.Error.WriteLine($"Executor '{executorFailed.ExecutorId}' failed with {(executorFailed.Data == null ? "unknown error" : $"exception {executorFailed.Data}")}.");
+    }
+}
+```
+
+    2、Agent直接放进工作流里面
+        var workflow = new WorkflowBuilder(frenchAgent).AddEdge(frenchAgent, spanishAgent).AddEdge(spanishAgent, englishAgent).Build();
+    3、Agent在工作流中的模式
+        1、sequential
+            AgentWorkflowBuilder.BuildSequential()
+        2、sequential-chain-only
+            AgentWorkflowBuilder.BuildSequential(chainOnlyAgentResponses: true)
+        3、concurrent
+            AgentWorkflowBuilder.BuildConcurrent()
+        4、handoffs
+            AgentWorkflowBuilder.CreateHandoffBuilderWith()
+        5、groupchat
+            AgentWorkflowBuilder.CreateGroupChatBuilderWith()
+    4、子工作流
+        把工作流转换为执行节点：subWorkflow.BindAsExecutor("TextProcessingSubWorkflow");
+
+## Agents
+
+    1、把Agent做到执行器里面
+        执行节点里面本质是Agent
+    2、工作流转换为Agent
+        workflow.AsAIAgent()
