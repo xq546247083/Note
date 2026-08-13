@@ -436,7 +436,7 @@ using var codeAct = new HyperlightCodeActProvider(options);
 
 ## AGUI
 
-    它的主要作用是实现 “AI 智能体前后端分离”：把 Agent 的核心计算逻辑放在后台服务器运行，前端（Web 网页、命令行终端、手机 App 等）只负责展示和交互。
+    他是开源的基于事件的协议,让Agent与前端无缝对话的事件通信标准。它的主要作用是实现 “AI 智能体前后端分离”：把 Agent 的核心计算逻辑放在后台服务器运行，前端（Web 网页、命令行终端、手机 App 等）只负责展示和交互。
     1、创建服务端
 
 ```Csharp
@@ -769,3 +769,47 @@ return new WorkflowBuilder(numberRequestPort)
     workflow.ToMermaidString()
 
 # 04-hosting
+
+## af-hosting(重要)
+
+    1、local_responses
+        演示的是：在ASP.NET Core 服务中暴露一个 POST /responses 接口，把一个 AIAgent 按照 OpenAI Responses API 格式对外提供服务。具体代码实现在demo中看。
+    2、local_responses_workflow
+        演示的是：在ASP.NET Core 服务中暴露一个 POST /responses 接口，把一个 工作流 按照 OpenAI Responses API 格式对外提供服务。具体代码实现在demo中看。
+    3、客户端的2种实现方案
+        1、var chatClient = responseClient.AsIChatClient(model);
+        2、var agent = responseClient.AsAIAgent(model: model, name: "HostedResponsesClient");
+
+## FoundryHostedAgents
+
+    在Azure上部署Agent，跳过。
+
+# 05-end-to-end
+
+## A2AClientServer
+
+    演示的是：本地的主控Agent调度服务器的3个Agent。具体代码实现在demo中看。
+
+## AgentWebChat(重要)
+
+    演示的是：一个基于 .NET Aspire 打造的全栈 Web 聊天系统端到端示例。具体代码实现在demo中看。
+    1、项目结构：
+        1、AgentWebChat.AppHost:是Aspire主机
+        2、AgentWebChat.ServiceDefaults：辅助Aspire的项目
+        3、AgentWebChat.AgentHost:AI Agent 后端微服务
+        4、AgentWebChat.Web：网页
+    2、效果是：
+        1、网页可以选择不同的Agent
+        2、调用方式分：
+            1、ChatClient
+            2、Response
+            3、A2A
+
+## AGUIClientServer(重要)
+
+    演示如何启用有个AGUI的AI服务，里面创建了各种需要的Agent。具体代码实现在demo中看。
+    https://docs.ag-ui.com/introduction
+
+## AspNetAgentAuthorization
+
+    演示权限验证。具体代码实现在demo中看。
