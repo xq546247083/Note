@@ -19,6 +19,21 @@
     2、对话的时候，根据apply注册的能力，和Agent模式，自主决策调用
     3、关闭的时候，按照【注册插件】列表，逆序执行effect
 
+# 和ABP类比
+
+    1、DSH和ABP都提供了一个底座。
+    2、DSH的插件和ABP的模块类似
+    
+| DSH (DeepSeek Harness) | .NET ABP Framework | 说明 |
+| :--- | :--- | :--- |
+| **Plugin（插件）** | **AbpModule（模块）** | 系统的基本构建单元，整个系统由插件/模块组合而成 |
+| `export const inject = [...]` | `[DependsOn(typeof(...))]` | 声明式模块依赖，由 IoC 容器自动拓扑排序并保证加载顺序 |
+| `apply(ctx)` / `Service.start()` | `OnApplicationInitialization()` | 模块激活与初始化阶段 |
+| `ctx.effect(() => disposer)` | `OnApplicationShutdown()` | 模块注销与资源反向释放 |
+| `class extends Service` | `ISingletonDependency` | 发布单例服务供整个 Context 注入使用 |
+| `ctx.waterfall`（瀑布流） | `Interceptor`（AOP 拦截器/中间件） | 洋葱模型拦截调用（鉴权、超时、过滤、重写） |
+| **动态热插拔 (HMR)** | 编译期静态装配为主 | DSH 额外支持在运行时由模型或宿主动态增删插件 |
+
 # 添加自定义插件
 
     1、定义一个插件，放在合适的位置,参考【Demos-chat-to-db】,要包括以下文件：
