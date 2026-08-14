@@ -48,12 +48,12 @@
         ctx.on('event-name', (payload) => {})
     3、事件模式
         1、emit — 广播
-            有监听器同步执行，返回值会被忽略。
+            所有监听器同步执行，返回值会被忽略。
             ctx.emit('my-plugin/ready', { id: 'worker-1' })
         2、bail — 短路
             监听器按顺序运行，第一个不是 null、false 或 undefined 的返回值会成为最终结果。
             const result = ctx.bail('some-check', input)
-        3、erial — 顺序执行
+        3、serial — 顺序执行
             监听器按注册顺序依次执行，并等待异步结果；第一个不是 null、false 或 undefined 的返回值会终止后续执行。
             await ctx.serial('setup-phase', context)
         4、waterfall
