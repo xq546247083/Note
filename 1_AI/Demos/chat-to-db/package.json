@@ -1,0 +1,10 @@
+{
+  "name": "chat-to-db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "mysql2": "^3.11.0"
+  }
+}
