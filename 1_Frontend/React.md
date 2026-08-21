@@ -4,6 +4,7 @@
 
 ## 1、声明式与组件化
 - 页面由一个个独立的**函数组件（Function Component）**像积木一样拼装而成。
+- **命名铁律**：React 组件函数名**必须以大写字母开头**（如 `function UserCard() {}`），小写字母开头的标签（如 `<div>`、`<button>`）会被 React 视为原生 HTML 标签。
 - 视图由状态驱动：`UI = fn(State)`，你只管描述数据在某种状态下长什么样，React 负责自动对比 Virtual DOM 并高效更新真实 DOM。
 
 ## 2、Props vs State（核心界限）
@@ -12,7 +13,12 @@
 | **Props** | 外部传入（父组件传给子组件） | **只读不可变**（组件决不能修改自己的 props） | 组件通信、配置传递、插槽（children） |
 | **State** | 组件内部私有状态 | 通过 Setter 函数修改 | 控制组件自身随交互变化的数据 |
 
-## 3、不可变数据原则（Immutable）与内存指针
+## 3、保持组件纯粹（Pure Components 戒律）
+- **核心原则**：相同输入（Props/State）必须永远返回相同的 JSX。
+- **铁律**：**严禁在渲染过程中修改任何外部已存在的变量或对象**（如严禁在组件函数体内写 `globalCount++` 产生渲染副作用）。
+- **严格模式（StrictMode）为什么执行 2 次？**：在开发环境下，React 会特意将组件渲染 2 次、将 Effect 执行 2 次，目的是帮助你及早揪出“不纯的渲染副作用”和“忘记清理的 Effect 内存泄漏”。
+
+## 4、不可变数据原则（Immutable）与内存指针
 - **为什么不能直接修改 State？（底层原理）**：
   - 在 JavaScript 中，对象和数组是引用类型（指针）；
   - React 检查状态是否变化时，为了极致性能，做的是**浅比较（`Object.is(oldState, newState)`，仅比对内存指针地址）**；
@@ -23,21 +29,67 @@ setUser({ ...user, name: "Tom" }); // 更新对象（创建新对象指针）
 setList([...list, newItem]);       // 更新数组（创建新数组指针）
 ```
 
-## 4、组件重新渲染（Re-render）的 3 个触发时机
+## 5、State 如同一张快照（Snapshot 机制）
+- **核心原理**：在一个渲染周期内，State 的值是被固定的快照常量！
+- **经典陷阱**：
+```jsx
+const [count, setCount] = useState(0);
+const handleClick = () => {
+    setCount(count + 1);
+    console.log(count); // 打印出来的依然是旧值 0！
+};
+```
+- **解释**：`setCount` 是通知 React 在**下一次渲染**中使用新值，当前事件执行作用域里的 `count` 依然是当次渲染生成的常量快照 0。
+
+## 6、渲染与提交三阶段（Render & Commit）
+1. **触发（Trigger）**：组件初次挂载，或调用了 `setState` 触发更新；
+2. **渲染（Render）**：React 调用你的组件函数，计算出最新的 Virtual DOM 虚拟描述树；
+3. **提交（Commit）**：React 把虚拟 DOM 的差异变更高效应用到真实的浏览器 DOM 树上（仅在真实 DOM 发生变动时操作）。
+
+## 7、组件重新渲染（Re-render）的 3 个触发时机
 1. **自身的 State 发生改变**；
-2. **父组件重新渲染了**（子组件默认也会被动跟着重新渲染，除非用 `React.memo` 进行浅比较阻断）；
-3. **消费的 Context / 全局 Store 发生了变化**。
+2. **父组件重新渲染了**（子组件默认也会被动重新执行，除非使用 `React.memo` 进行浅比较阻断）；
+3. **消费的 Context 或全局 Store 发生了变化**。
 
 ---
 
-# 二、组件通信全景（4 大方式）
+# 二、JSX 语法三大铁律与表达式规则
 
-## 1、父传子（Props & 插槽）
+## 1、JSX 书写三大铁律
+1. **只能返回一个根标签**：多个同级标签必须用空标签 `<>...</>`（Fragment 片段）包裹，避免多余的 DOM 节点嵌套。
+2. **所有标签必须显式闭合**：如 `<img />`、`<input />`、`<br />`。
+3. **属性名采用驼峰（camelCase）命名**：
+   - 样式类名使用 `className`（避免与 JS 关键字 `class` 冲突）；
+   - 表单 label 关联使用 `htmlFor`（代替 `for`）；
+   - 事件使用 `onClick`、`onChange` 等。
+
+## 2、大括号 `{}` 嵌入 JavaScript 表达式
 ```jsx
-// 1、普通属性传递
-<UserCard name="Tom" age={18} />
+// 1、变量与计算
+<h1>{user.name.toUpperCase()}</h1>
 
-// 2、children 插槽（内容分发，组件内部通过 props.children 渲染）
+// 2、双大括号 style={{ ... }} 的真相
+// 外层大括号是 JSX 表达式语法，内层大括号是一个普通的 JS 对象字面量
+<div style={{ backgroundColor: 'red', fontSize: 16 }}>提示</div>
+```
+
+---
+
+# 三、组件通信全景（4 大核心方式）
+
+## 1、父组件 ➡️ 子组件（Props 传参与插槽）
+1. **普通属性传参（支持默认值与展开语法）**：
+```jsx
+// 子组件：支持默认值
+function Avatar({ size = 100, name }) { ... }
+
+// 父组件：支持批量展开传参
+function Profile(props) {
+    return <Avatar {...props} />; // 将 props 里的所有字段一次性透传
+}
+```
+2. **`children` 插槽传递（嵌套组合）**：
+```jsx
 function Card({ title, children }) {
     return (
         <div className="card">
@@ -48,78 +100,46 @@ function Card({ title, children }) {
 }
 
 // 父组件使用：像 HTML 标签一样自由嵌套内容
-function App() {
-    return (
-        <Card title="用户信息">
-            <p>用户名：Tom</p>
-            <button>编辑</button>
-        </Card>
-    );
-}
+<Card title="用户信息">
+    <p>用户名：Tom</p>
+    <button>编辑</button>
+</Card>
 ```
 
-## 2、子传父（回调函数 Callback）
-- **原理**：父组件把一个函数通过 Props 传给子组件，子组件在触发事件时调用该函数回传数据：
+## 2、子组件 ➡️ 父组件（回调函数 Callback）
+- **原理**：父组件向子组件传递一个函数，子组件在内部事件触发时调用该函数，并把数据作为参数回传给父组件：
 ```jsx
-// 子组件：SearchInput
 function SearchInput({ onSearch }) {
     const [keyword, setKeyword] = useState("");
-    return (
-        <div>
-            <input value={keyword} onChange={(e) => setKeyword(e.target.value)} />
-            <button onClick={() => onSearch(keyword)}>搜索</button>
-        </div>
-    );
+    return <button onClick={() => onSearch(keyword)}>搜索</button>;
 }
 
-// 父组件：接收子组件回传的 keyword
 function UserListPage() {
-    const handleSearch = (searchKey) => {
-        console.log("父组件收到子组件传递的关键词:", searchKey);
-    };
+    const handleSearch = (searchKey) => console.log("收到子组件关键词:", searchKey);
     return <SearchInput onSearch={handleSearch} />;
 }
 ```
 
 ## 3、兄弟组件间通信（状态提升 State Lifting）
-- **原理**：当两个兄弟组件需要共享数据时，**把该 State 提升到它们共同的最近父组件中维护**，父组件再分别通过 Props 分发给两个子组件：
-```jsx
-function Parent() {
-    const [activeId, setActiveId] = useState(null); // 提升到父组件的共享状态
-
-    return (
-        <>
-            <BrotherA onSelect={(id) => setActiveId(id)} />
-            <BrotherB currentId={activeId} />
-        </>
-    );
-}
-```
+- **原理**：当两个兄弟组件需要共享数据时，**把该 State 提升到它们共同的最近父组件中维护**，父组件再分别通过 Props 分发给两个子组件。
 
 ## 4、跨层级与全局通信（Context 或 Zustand 全局状态）
 - 简单场景使用 `createContext` + `useContext`；
-- 企业级复杂业务状态（用户信息、权限、全局设置）统一使用 **Zustand**：
-  - 任意组件 A：`useUserStore.getState().setUser(...)`（更新状态）；
-  - 任意组件 B：`const user = useUserStore(s => s.user)`（自动同步接收最新数据并刷新）。
+- 企业级复杂业务状态（用户信息、权限、全局设置）统一使用 **Zustand**。
 
 ---
 
-# 三、React 19 核心 Hooks（底层原理解析）
+# 四、React 19 核心 Hooks（底层原理解析）
 
-## 1、useState（定义组件状态与函数式更新）
-- **底层运行原理**：
-  - React 在组件外部的 Fiber 节点上维护了一条状态链表（`memoizedState`），每次调用 `useState` 都会按声明顺序在链表中分配一个槽位；
-  - 每次组件重新渲染时，React 依次从对应的链表槽位中取出最新的状态值；
-  - 调用 `setCount(新值)` 时，React 将更新任务推入更新队列，调度重新执行该组件函数并生成新 Virtual DOM。
+## 1、useState（定义组件状态与批处理机制）
+- **自动批处理（Automatic Batching）**：
+  在同一个事件处理函数中，无论写了多少个 `setState`（即使在 `setTimeout` 或 `Promise` 异步回调中），React 都会**自动合并为一次重新渲染**，绝不会因多次修改而刷新多次。
 - **函数式更新（防并发/异步覆盖）**：
-  - 如果新状态依赖于上一次状态，必须传入回调函数：
+  如果新状态依赖于上一次状态，必须传入回调函数：
 ```jsx
 const [count, setCount] = useState(0);
 
-// 错误写法（在并发/批量更新中可能只加了 1）
-setCount(count + 1);
-
-// 正确写法（基于最新前置状态计算，队列串行计算）
+// 正确写法（放入更新队列串行计算，避免闭包旧值覆盖）
 setCount(prev => prev + 1);
 ```
 
@@ -161,12 +181,12 @@ const handleFocus = () => inputRef.current.focus(); // 直接操作原生 DOM
 const { theme } = useContext(ThemeContext);
 ```
 
-## 5、自定义 Hook（Custom Hook - 复用业务逻辑的终极武器）
+## 5、自定义 Hook（Custom Hook - 逻辑抽象复用）
 - **底层运行原理**：
   - 自定义 Hook **不是在组件之间共享 State 数据本身**，而是 **复用包含状态与副作用的代码逻辑片段**；
   - 凡是以 `use` 开头的函数都可以组合调用原生 Hook。每次在不同组件里调用自定义 Hook，都会在该组件自身的 Fiber 链表上独立创建专属于自己的 state 和 effect，彼此互不干扰：
 ```jsx
-// 封装一个窗口宽度监听的自定义 Hook
+// 封装复用的窗口尺寸监听逻辑
 function useWindowWidth() {
     const [width, setWidth] = useState(window.innerWidth);
     useEffect(() => {
@@ -176,38 +196,62 @@ function useWindowWidth() {
     }, []);
     return width;
 }
-
-// 在任何组件里直接复用
-function MyComponent() {
-    const width = useWindowWidth();
-    return <div>当前窗口宽度: {width}</div>;
-}
 ```
 
 ---
 
-# 四、表单处理（受控组件 vs 非受控组件）
+# 五、状态设计与更新最佳实践（官方精髓）
 
-## 1、受控组件（Controlled Component - 推荐标准模式）
-- 表单输入框的值完全由 React State 控制，所有变动通过 `onChange` 同步回 State（Ant Design `Form` 的底层思想）：
+## 1、State 结构设计的黄金法则
+1. **不要把“可计算出来的派生值”存入 State**：
+   - ❌ 错误：定义了 `firstName`、`lastName`，又定义了 `fullName` state（需手动同步，易出 bug）；
+   - ✔️ 正确：直接在组件内计算 `const fullName = firstName + ' ' + lastName;`。
+2. **避免重复与矛盾的状态**：
+   - 不要同时定义 `isSending` 和 `isSent` 两个 bool 变量，推荐定义状态机字符串：`status: 'typing' | 'sending' | 'sent'`。
+3. **避免深层嵌套对象**：尽量将 state 结构扁平化，便于不可变更新。
+
+## 2、不可变数组更新操作速查表
+| 目标操作 | ❌ 严禁使用的变异方法 | ✔️ 必须使用的不可变方法 |
+| :-- | :-- | :-- |
+| **添加元素** | `push`、`unshift` | `[...list, newItem]` 或 `[newItem, ...list]` |
+| **删除元素** | `splice`、`pop`、`shift` | `list.filter(item => item.id !== targetId)` |
+| **替换/修改** | `list[index] = xxx` | `list.map(item => item.id === targetId ? { ...item, done: true } : item)` |
+| **排序/反转** | `list.sort()`、`list.reverse()` | `[...list].sort()` 或现代 `list.toSorted()`（克隆后排序） |
+
+## 3、状态的保留与重置机制（Key 的妙用）
+- **默认规则**：相同位置渲染相同组件，React 会**保留其内部 State**。
+- **强制重置技巧**：给组件传递不同的 **`key`**，React 会强制销毁旧组件实例并重新挂载新组件，从而**瞬间一键重置其所有内部 State**：
 ```jsx
-const [name, setName] = useState("");
-<input value={name} onChange={(e) => setName(e.target.value)} />
+// 切换 userId 时，Profile 组件内部的所有表单草稿和状态会被完全干净地重置！
+<Profile key={userId} userId={userId} />
 ```
 
-## 2、非受控组件（Uncontrolled Component）
-- 表单值由 DOM 自身维护，需要时通过 `useRef` 读取值。
+## 4、你可能不需要 Effect（官方高频避坑指南）
+- ❌ **不要用 `useEffect` 监听 props 变动去更新另一个 state** ➡️ 直接在渲染期间同步计算；
+- ❌ **不要用 `useEffect` 处理用户交互操作（如购买成功弹提示）** ➡️ 直接在按钮的 `onClick` 事件处理函数中执行。
 
 ---
 
-# 五、列表、事件与条件渲染技巧
+# 六、表单处理（受控组件 vs 非受控组件）
 
-## 1、事件处理（Event Handling）
-- 必须传递函数引用，传参需用箭头函数包裹：
-```jsx
-<button onClick={handleClick}>无参直接传引用</button>
-<button onClick={(e) => handleDelete(id, e)}>有参箭头函数包裹</button>
-```
+1. **受控组件（Controlled - 推荐标准模式）**：
+   - 表单输入框的值完全由 React State 单一数据源控制，所有变动通过 `onChange` 同步回 State（Ant Design `Form` 表单的底层核心）：
+   ```jsx
+   const [name, setName] = useState("");
+   <input value={name} onChange={(e) => setName(e.target.value)} />
+   ```
+2. **非受控组件（Uncontrolled）**：
+   - 表单值由 DOM 自身维护，需要时通过 `useRef` 一次性读取。
+
+---
+
+# 七、列表、事件与条件渲染技巧
+
+## 1、事件处理与冒泡控制
+- **传递函数引用**：无参直接传引用 `onClick={handleClick}`，传参需用箭头函数包裹 `onClick={(e) => handleDelete(id, e)}`。
+- **阻止事件冒泡与默认行为**：
+  - `e.stopPropagation()`：阻止事件向父级 DOM 节点冒泡传播；
+  - `e.preventDefault()`：阻止浏览器原生默认行为（如阻止表单提交刷新、阻止 `<a>` 标签跳转）。
 
 ## 2、列表渲染与 Key 的底层 Diff 原理
 - 使用原生 `map()` 渲染列表；
@@ -235,7 +279,7 @@ const [name, setName] = useState("");
 
 ---
 
-# 六、性能优化与 React 19 新特性
+# 八、性能优化与 React 19 新特性
 
 ## 1、性能优化三剑客
 1. **`React.memo(Component)`**：包裹子组件，组件会在渲染前对新旧 Props 进行浅比较；如果 Props 完全相同，直接跳过该子组件的渲染执行。
@@ -267,7 +311,7 @@ function UserInfo({ userPromise }) {
 
 ---
 
-# 七、错误边界与路由懒加载（Suspense）
+# 九、错误边界与路由懒加载（Suspense）
 
 ## 1、路由与组件懒加载（性能优化必备）
 - 配合 Webpack/Vite 拆分代码分包（Code Splitting），页面被访问时才异步加载对应的 JS 文件：
@@ -286,7 +330,7 @@ function App() {
 
 ---
 
-# 八、应用启动根挂载（React 19 标准入口）
+# 十、应用启动根挂载（React 19 标准入口）
 
 - 彻底淘汰旧版 `ReactDOM.render`，统一使用 `createRoot`：
 ```jsx
