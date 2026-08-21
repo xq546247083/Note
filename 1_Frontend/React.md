@@ -383,3 +383,219 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </React.StrictMode>
 );
 ```
+---
+
+---
+
+# 十二、Zustand 全景指南
+
+## 1、为什么选择 Zustand？（核心优势）
+1. **零 Provider 嵌套**：无需在顶层包 `<Provider>`，杜绝洋葱套娃。
+2. **细粒度按需订阅（Selector）**：只有自己订阅的字段变化才重绘，性能极高。
+3. **脱离 React 组件使用**：可在 `http.ts` 拦截器、工具函数中直接通过 `.getState()` / `.setState()` 读写。
+4. **内置异步支持**：Action 函数内直接写 `async/await`，无需额外中间件。
+
+---
+
+## 2、全套核心 API 详解
+
+### (1) `create((set, get, store) => ({ ... }))`
+创建与 React 绑定的全局 Store Hook。
+* **`set(partial, replace?)`**：修改状态。
+  - **默认浅合并（`replace: false`）**：`set({ count: 5 })`（内部自动执行 `{ ...state, count: 5 }`，无需手写展开）；
+  - **函数式更新**：`set(state => ({ count: state.count + 1 }))`（基于最新值计算）；
+  - **全量覆盖替换（`replace: true`）**：`set(initialState, true)`（彻底用新对象替换整个 Store，常用于退出登录一键清空重置！）。
+* **`get()`**：在 Action 内部读取当前 Store 的其他字段最新值：
+  ```ts
+  const token = get().token;
+  ```
+
+### (2) `store.getState()` 与 `store.setState(partial, replace?)`
+脱离 React 组件，在纯 JS/TS 文件（如 Axios 拦截器、路由守卫）中直接调用：
+```ts
+// 1、读取当前状态（非响应式，不引发组件重绘）
+const currentToken = useUserStore.getState().token;
+
+// 2、直接外部修改状态
+useUserStore.setState({ token: "new_token" });
+
+// 3、外部全量重置
+useUserStore.setState({ user: null, token: null });
+```
+
+### (3) `store.subscribe(listener)`（外部事件订阅）
+在组件外部监听 Store 数据变动：
+```ts
+const unsubscribe = useUserStore.subscribe((state, prevState) => {
+    console.log("状态从", prevState, "变为", state);
+});
+
+// 取消监听
+unsubscribe();
+```
+
+---
+
+## 3、组件内消费 Store 的四大姿势
+
+### 1. 精准单字段订阅（Selector - 最推荐）
+```tsx
+function Header() {
+    // 只有 user 变了当前组件才重绘；token 或 isLoading 改变 0 次多余刷新！
+    const user = useUserStore(state => state.user);
+    const logout = useUserStore(state => state.logout);
+
+    return <div>欢迎：{user?.name} <button onClick={logout}>退出</button></div>;
+}
+```
+
+### 2. 多字段浅比较解构（`useShallow`）
+当需要同时解构多个字段时，使用 `useShallow` 避免对象引用不同引发多余重绘：
+```tsx
+import { useShallow } from 'zustand/react/shallow';
+
+function UserProfile() {
+    const { user, isLoading } = useUserStore(
+        useShallow(state => ({ user: state.user, isLoading: state.isLoading }))
+    );
+    return <div>...</div>;
+}
+```
+
+### 3. 只获取操作方法（永不重绘）
+```tsx
+function ActionButton() {
+    // 组件只消费函数，无论 Store 数据怎么变，该组件永远不重绘！
+    const increase = useStore(state => state.increase);
+    return <button onClick={increase}>加 1</button>;
+}
+```
+
+---
+
+## 4、常用官方中间件（Middleware）
+
+### (1) `persist`（自动本地持久化）
+将状态自动同步保存到 `localStorage` 或 `sessionStorage`：
+```ts
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+
+export const useUserStore = create(
+    persist<UserState>(
+        (set) => ({
+            token: null,
+            user: null,
+            setToken: (token) => set({ token }),
+        }),
+        {
+            name: 'user-storage', // 存入 localStorage 的 key
+            storage: createJSONStorage(() => localStorage), // 默认 localStorage
+            partialize: (state) => ({ token: state.token }), // 【可选】过滤只持久化 token，不存临时变量
+        }
+    )
+);
+```
+
+### (2) `devtools`（配合 Redux DevTools 浏览器插件调试）
+```ts
+import { devtools } from 'zustand/middleware';
+
+export const useStore = create(
+    devtools(
+        (set) => ({
+            count: 0,
+            increase: () => set((state) => ({ count: state.count + 1 }), false, 'increase'), // 标记 Action 名
+        }),
+        { name: 'AppStore' }
+    )
+);
+```
+
+### (3) `immer`（简化深层嵌套对象修改）
+无需写层层 `{ ...state, a: { ...state.a, b: 1 } }`，直接就地修改：
+```ts
+import { immer } from 'zustand/middleware/immer';
+
+export const useStore = create(
+    immer<State>((set) => ({
+        nested: { count: 0 },
+        inc: () => set((state) => {
+            state.nested.count += 1; // 像普通可变对象一样直接修改！
+        }),
+    }))
+);
+```
+
+---
+
+## 5、标准模板
+
+```ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+interface UserProfile {
+    id: string;
+    userName: string;
+    roles: string[];
+}
+
+interface UserState {
+    user: UserProfile | null;
+    token: string | null;
+    isLoading: boolean;
+    // Actions
+    setUser: (user: UserProfile) => void;
+    fetchProfile: () => Promise<void>;
+    logout: () => void;
+}
+
+const initialState = {
+    user: null,
+    token: null,
+    isLoading: false,
+};
+
+export const useUserStore = create<UserState>()(
+    persist(
+        (set, get) => ({
+            ...initialState,
+
+            setUser: (user) => set({ user }),
+
+            // 异步调接口
+            fetchProfile: async () => {
+                set({ isLoading: true });
+                try {
+                    const res = await getUserProfileApi();
+                    set({ user: res, isLoading: false });
+                } catch (err) {
+                    set({ isLoading: false });
+                    throw err;
+                }
+            },
+
+            // 一键重置状态
+            logout: () => set(initialState),
+        }),
+        {
+            name: 'auth-storage',
+            partialize: (state) => ({ token: state.token }), // 仅持久化 token
+        }
+    )
+);
+```
+
+---
+
+## 6、Zustand vs Flutter (Riverpod) 像素级对标速查表
+
+| 功能操作 | Zustand (React) | Flutter (Riverpod) | 核心本质 |
+| :--- | :--- | :--- | :--- |
+| **定义数据与方法** | `create<State>((set, get) => ({ ... }))` | `class XxxNotifier extends AsyncNotifier<State>` | 声明全局数据仓库与操作员 |
+| **组件订阅并重绘** | `const data = useStore(s => s.data)` | `final data = ref.watch(provider)` | 响应式订阅 |
+| **精准按需订阅** | `const name = useStore(s => s.user.name)` | `ref.watch(provider.select(s => s.name))` | 细粒度更新，防无谓重绘 |
+| **只调方法不重绘** | `const action = useStore(s => s.action)` | `ref.read(provider.notifier).action()` | 命令式发号施令 |
+| **脱离组件读写** | `useStore.getState().xxx`<br>`useStore.setState({ ... })` | `container.read(provider)` | 拦截器/工具类中外部读写 |
+| **全量重置 Store** | `set(initialState, true)` | `ref.invalidate(provider)` | 一键恢复初始状态 |
