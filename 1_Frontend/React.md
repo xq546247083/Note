@@ -143,7 +143,46 @@ const [count, setCount] = useState(0);
 setCount(prev => prev + 1);
 ```
 
-## 2、useEffect（副作用调度与生命周期合一）
+## 2、useReducer（复杂状态集中规约器）
+- **底层运行原理**：
+  - `useReducer` 是 `useState` 的底层基石；
+  - 核心公式：`新 State = Reducer(旧 State, Action)`；
+  - 它将 **“发出什么动作指令（Dispatch Action）”** 与 **“状态如何具体计算变更（Reducer 纯函数）”** 彻底解耦，使所有改动规则集中收敛在一处，避免多处分散修改导致状态不同步。
+- **实战代码**：
+```jsx
+import { useReducer } from 'react';
+
+// 1、定义状态修改规则（记账员）
+function counterReducer(state, action) {
+    switch (action.type) {
+        case 'increment':
+            return { count: state.count + 1 };
+        case 'decrement':
+            return { count: state.count - 1 };
+        case 'reset':
+            return { count: 0 };
+        default:
+            return state;
+    }
+}
+
+// 2、组件内使用
+function Counter() {
+    const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+
+    return (
+        <div>
+            <p>当前数值：{state.count}</p>
+            <button onClick={() => dispatch({ type: 'increment' })}>+1</button>
+            <button onClick={() => dispatch({ type: 'decrement' })}>-1</button>
+            <button onClick={() => dispatch({ type: 'reset' })}>重置</button>
+        </div>
+    );
+}
+```
+- **选型建议**：简单独立变量用 `useState`（90% 场景）；多字段联动/复杂状态转换用 `useReducer`；跨页面全局共享用 `Zustand`。
+
+## 3、useEffect（副作用调度与生命周期合一）
 - **底层运行原理**：
   - 函数组件的函数体只负责 UI 纯计算；发网络请求、操作 DOM、启动定时器等行为属于“副作用”；
   - `useEffect` 的回调**不会在渲染过程中同步阻塞执行**，而是在**浏览器完成真实 DOM 绘制并上屏（Paint）之后**才异步调度执行，因此绝不卡顿首屏渲染；
@@ -159,7 +198,7 @@ useEffect(() => {
 }, [dep]); // 依赖项：[] 仅挂载执行一次；[dep] 仅在 dep 变化时执行
 ```
 
-## 3、useRef（DOM 引用与跨渲染常驻变量）
+## 4、useRef（DOM 引用与跨渲染常驻变量）
 - **底层运行原理**：
   - `useRef(initialValue)` 本质上是在组件对应的 Fiber 节点上创建并挂载了一个普通的纯 JS 对象：`{ current: initialValue }`；
   - 在组件的整个生命周期内，React 保证每次渲染返回的都是**同一个内存对象引用**；
@@ -171,7 +210,7 @@ const handleFocus = () => inputRef.current.focus(); // 直接操作原生 DOM
 <input ref={inputRef} />
 ```
 
-## 4、useContext（跨层级发布-订阅数据消费）
+## 5、useContext（跨层级发布-订阅数据消费）
 - **底层运行原理**：
   - 基于**“发布-订阅（Pub/Sub）”**模式；
   - `<MyContext.Provider value={data}>` 作为数据的发布者；
@@ -181,7 +220,7 @@ const handleFocus = () => inputRef.current.focus(); // 直接操作原生 DOM
 const { theme } = useContext(ThemeContext);
 ```
 
-## 5、自定义 Hook（Custom Hook - 逻辑抽象复用）
+## 6、自定义 Hook（Custom Hook - 逻辑抽象复用）
 - **底层运行原理**：
   - 自定义 Hook **不是在组件之间共享 State 数据本身**，而是 **复用包含状态与副作用的代码逻辑片段**；
   - 凡是以 `use` 开头的函数都可以组合调用原生 Hook。每次在不同组件里调用自定义 Hook，都会在该组件自身的 Fiber 链表上独立创建专属于自己的 state 和 effect，彼此互不干扰：
