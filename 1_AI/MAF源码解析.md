@@ -1,5 +1,10 @@
 # MAF源码解析
 
+## AIAgent和DelegatingAIAgent
+
+    1、AIAgent的【直接】继承者，是干活的
+    2、DelegatingAIAgent的【直接】继承者，不是直接干活的额，主要是处理数据，中转到内部的InnerAgent
+
 ## 解析MapOpenAIResponses
 
     1、MicrosoftAgentAIHostingOpenAIEndpointRouteBuilderExtensions
