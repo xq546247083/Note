@@ -3,7 +3,7 @@
 ## AgentSession
 
     用来存储Agent运行中的会话状态
-        1、任意的对象，可以通过ProviderSessionState，和session的StateBag挂钩，保存运行状态
+        1、任意的对象，可以通过ProviderSessionState，和AgentSession的StateBag挂钩，保存运行状态
         2、StateBag通过虚拟化和反序列化，可以进行数据库存储。
 
 ## AIAgent和DelegatingAIAgent
