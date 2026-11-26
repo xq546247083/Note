@@ -52,4 +52,40 @@
         2、在存储的时候，指定各个命名向量的值。
         3、在搜索的时候，指定一个命名向量搜索。
 
+## 负载
+
+    Qdrant 的重要特性之一是能够与向量一起存储附加信息。在 Qdrant 术语中，这些信息被称为 payload。Qdrant 允许您存储任何可以使用 JSON 表示的信息。
+    1、Payload类型
+        1、整数
+        2、浮点数
+        3、布尔值
+        4、关键字
+        5、地理位置
+            geo
+        6、日期时间
+            RFC 3339 格式的日期和时间
+        7、UUID
+    2、过滤条件
+        1、id
+            通过id，直接锁定
+        2、MatchKeyword
+            过滤关键字
+    3、更新数据
+        1、SetPayloadAsync
+            对传入键的负载更新，没传入键的负载不变
+        2、OverwritePayloadAsync
+            覆盖数据库的负载
+        3、ClearPayloadAsync
+            清空所有负载
+        4、DeletePayloadAsync
+            删除指定键的负载
+    4、索引
+        为了在使用过滤器时进行更高效的搜索，Qdrant 允许您通过指定期望的字段名称 and 类型来为 payload 字段创建索引。关键字：CreatePayloadIndexAsync
+    5、分面计数
+        分面 (Faceting) 是一种特殊的计数技术，类似于 SQL 中的 GROUP BY 和 COUNT(*) 命令，可用于各种目的：
+            1、了解一个 payload 键存在哪些唯一值。
+            2、了解包含每个唯一值的点 (points) 的数量。
+            3、了解匹配特定值时过滤器的限制性会有多强。
+        关键字：FacetAsync
+
 ## 
