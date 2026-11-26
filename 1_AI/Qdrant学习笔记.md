@@ -98,53 +98,54 @@
         4、曼哈顿距离：Manhattan
     2、多向量集合
         每个记录可以有多个向量。此功能允许每个集合有多个向量存储。为了区分同一记录中的向量，它们应该有一个唯一的名称。在此模式下，每个命名向量都有其距离和大小。
-    3、操作集合
-        1、创建集合
-            CreateCollectionAsync
-            1、hnsw_config
-                索引配置。
-            2、wal_config
-                预写日志（Write-Ahead-Log）相关配置。
-            3、optimizers_config
-                优化器配置。
-            4、shard_number
-                定义集合应有多少个分片。详见分布式部署部分。
-            5、payload.memory
-                为有效载荷存储配置内存层级。
-            6、quantization_config
-                量化配置。
-            7、strict_mode_config
-                严格模式配置。
-        2、检查集合是否存在
-            CollectionExistsAsync
-        3、删除集合
-            DeleteCollectionAsync
-        4、更新集合
-            1、更新集合参数
-                UpdateCollectionAsync
-            2、更新集合向量模式
-                可以在不重新创建集合的情况下，向现有集合添加或删除命名向量。这对于嵌入模型迁移非常有用：您可以为新模型添加新向量，在后台重新嵌入点，然后在准备就绪时删除旧向量。
-                CreateVectorNameAsync
-                DeleteVectorNameAsync
-        5、获取集合信息
-            GetCollectionInfoAsync
-            1、集合状态
-                1、🟢 green: 集合就绪
-                2、🟡 yellow: 集合正在优化
-                3、⚫ grey: 集合待优化
-                    UpdateCollectionAsync optimizersConfig: new OptimizersConfigDiff { } 触发优化
-                4、🔴 red: 发生引擎无法恢复的错误
-            2、集合元数据
-                给集合添加字段，说明集合信息等
-        6、集合别名
-            别名是现有集合的附加名称。所有对集合的查询也可以使用别名而不是集合名称进行相同的操作。
-            1、创建别名
-                CreateAliasAsync
-            2、删除别名
-                DeleteAliasAsync
-            3、获取集合别名
-                ListCollectionAliasesAsync
-            4、获取所有集合别名
-                ListAliasesAsync
-            5、获取所有集合
-                ListCollectionsAsync
+    3、创建集合
+        CreateCollectionAsync
+        1、hnsw_config
+            索引配置。
+        2、wal_config
+            预写日志（Write-Ahead-Log）相关配置。
+        3、optimizers_config
+            优化器配置。
+        4、shard_number
+            定义集合应有多少个分片。详见分布式部署部分。
+        5、payload.memory
+            为有效载荷存储配置内存层级。
+        6、quantization_config
+            量化配置。
+        7、strict_mode_config
+            严格模式配置。
+    4、检查集合是否存在
+        CollectionExistsAsync
+    5、删除集合
+        DeleteCollectionAsync
+    6、更新集合
+        1、更新集合参数
+            UpdateCollectionAsync
+        2、更新集合向量模式
+            可以在不重新创建集合的情况下，向现有集合添加或删除命名向量。这对于嵌入模型迁移非常有用：您可以为新模型添加新向量，在后台重新嵌入点，然后在准备就绪时删除旧向量。
+            CreateVectorNameAsync
+            DeleteVectorNameAsync
+    7、获取集合信息
+        GetCollectionInfoAsync
+        1、集合状态
+            1、🟢 green: 集合就绪
+            2、🟡 yellow: 集合正在优化
+            3、⚫ grey: 集合待优化
+                UpdateCollectionAsync optimizersConfig: new OptimizersConfigDiff { } 触发优化
+            4、🔴 red: 发生引擎无法恢复的错误
+        2、集合元数据
+            给集合添加字段，说明集合信息等
+    8、集合别名
+        别名是现有集合的附加名称。所有对集合的查询也可以使用别名而不是集合名称进行相同的操作。
+        1、创建别名
+            CreateAliasAsync
+        2、删除别名
+            DeleteAliasAsync
+        3、获取集合别名
+            ListCollectionAliasesAsync
+        4、获取所有集合别名
+            ListAliasesAsync
+        5、获取所有集合
+            ListCollectionsAsync
+
+## 
