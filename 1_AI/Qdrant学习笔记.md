@@ -231,4 +231,88 @@
 
 ## 搜索
 
-### 搜索
+### 相似性搜索
+
+    搜索最近的向量是许多表示学习应用的核心。现代神经网络经过训练，可以将对象转换为向量，使现实世界中相近的对象在向量空间中也表现为相近。例如，这可以是含义相似的文本、视觉上相似的图片或相同风格的歌曲。
+    1、度量算法
+        点积、余弦相似度、欧氏距离、曼哈顿距离
+    2、搜索API
+        1、QueryAsync
+        2、按分数过滤结果
+        3、设置结果中的负载和向量
+            with_vectors、with_payload
+    3、批量搜索 API
+    4、按ID查询
+    5、分页
+        offset、limit
+    6、分组API
+        QueryGroupsAsync
+    7、随机采样
+        随机查询
+
+### 筛选
+
+    使用 Qdrant，您可以在搜索或检索点时设置条件。ScrollAsync
+    1、过滤子句
+        1、必须 (Must)
+            MatchKeyword("city", "London") & MatchKeyword("color", "red")
+        2、应该 (Should)
+            MatchKeyword("city", "London") | MatchKeyword("color", "red")
+        3、不能 (Must Not)
+            !(MatchKeyword("city", "London") & MatchKeyword("color", "red"))
+        4、子句组合
+    2、过滤条件
+        1、精确匹配条件
+            1、匹配 (Match)
+                最简单的条件是检查存储值是否等于给定值的条件。如果存储了多个值，则其中至少一个应与条件匹配。您可以将其应用于关键字、整数、布尔值和UUID有效载荷。MatchKeyword、Match
+            2、匹配任意(Match Any)
+                Match("color", ["black", "yellow"]);
+            3、匹配排除 (Match Except)
+                MatchExcept("color", ["black", "yellow"]);
+            4、前缀匹配
+            5、子字符串匹配
+                这个不应该使用，很吃性能。MatchSubstring("url", "qdrant.tech/");
+        2、文本匹配
+            最小单位就是分词下来的词语。按照这个词语来匹配。
+            1、全文匹配
+                MatchText("description", "good cheap");
+            2、任意全文匹配
+                文本字段只包含一个查询术语，也被视为匹配。MatchTextAny("description", "good cheap");
+            3、短语匹配
+        3、范围
+            range条件设置了存储有效载荷值的可能值范围。gt、gte、lt、lte
+        4、地理位置
+            1、地理边界框
+                GeoBoundingBox("location", 52.520711, 13.403683, 52.495862, 13.455868);
+            2、地理半径
+                GeoRadius("location", 52.520711, 13.403683, 1000.0f);
+            3、地理多边形
+                GeoPolygon
+        5、嵌套键
+            Json对线的嵌套对象的字段过滤
+        6、值计数
+            除了直接值比较之外，还可以按值的数量进行过滤。ValuesCount("comments", new ValuesCount { Gt = 2 });
+        7、是否为空 (Is Empty)
+            IsEmpty("reports");
+        8、是否为 Null (Is Null)
+            IsNull("reports");
+        9、具有ID
+            HasId
+        10、具有向量
+            HasVector
+        11、切片
+            过滤切片
+
+### 混合查询
+
+    你可以通过多种方式搜索相同的数据：使用用于语义搜索的稠密向量，使用来自 SPLADE++ 等学习模型的稀疏向量，以及在具有 全文索引 的文本负载（payload）字段上进行 BM25 全文搜索。通常，通过组合这些查询，或者通过多阶段搜索（例如，先通过快速查询获取候选结果，再用更准确的查询进行重新评分），可以获得最佳结果。
+    1、倒排排名融合 (Reciprocal Rank Fusion, RRF)
+    2、基于分布的分数融合 (Distribution-Based Score Fusion, DBSF)
+
+### 探索
+
+    除了常规的“给一个向量、找最相似的 Top-K”之外，Qdrant 提供的更高级的数据探索与导航方式。具体见文档。
+
+[探索文档](https://qdrant.org.cn/documentation/search/explore/#discovery-api)
+
+### 
